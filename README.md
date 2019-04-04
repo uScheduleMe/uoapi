@@ -1,3 +1,14 @@
+### NOTE
+
+Since writing, the university has changed their timetable search tool, so that part of this project no longer works (and fails silently).
+
+The rest should work fine.
+
+### License
+
+¯\\_(ツ)_/¯
+
+
 Next steps:
 
 	- ~~document~~
