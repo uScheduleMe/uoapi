@@ -4,11 +4,6 @@ Since writing, the university has changed their timetable search tool, so that p
 
 The rest should work fine.
 
-### License
-
-¯\\_(ツ)_/¯
-
-
 Next steps:
 
 	- ~~document~~
@@ -79,3 +74,9 @@ Scheduling Priorities:
 	- starting late
 
 	- being spread out over many days or concentrated in fewer days 
+
+
+
+### License
+
+¯\\\_(ツ)\_/¯
