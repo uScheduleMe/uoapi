@@ -8,7 +8,7 @@ import re
 
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':DES-CBC3-SHA'
 #timetable_url = 'https://web30.uottawa.ca/v3/SITS/timetable/Search.aspx'
-code_re = re.compile("[A-Z]{3}[ ]{0,1}[0-9]{4, 5}[A-Za-z]{0,1}")
+code_re = re.compile("[A-Z]{3}[ ]{0,1}[0-9]{4,5}[A-Za-z]{0,1}")
 credit_re = re.compile(r"\([0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})\)|[0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})")
 
 
