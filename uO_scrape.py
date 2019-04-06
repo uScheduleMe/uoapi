@@ -5,8 +5,12 @@ import pandas as pd
 import json
 from time import sleep, perf_counter as pf
 import re
+
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':DES-CBC3-SHA'
 #timetable_url = 'https://web30.uottawa.ca/v3/SITS/timetable/Search.aspx'
+code_re = re.compile("[A-Z]{3}[ ]{0,1}[0-9]{4, 5}[A-Za-z]{0,1}")
+credit_re = re.compile(r"\([0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})\)|[0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})")
+
 
 def scrape_subjects():
 	'''
@@ -30,7 +34,7 @@ def scrape_subjects():
 	subjects = pd.DataFrame(subj_table, columns=['Subject', 'Code'])
 	subjects['Code'] = subjects['Code'].str.strip().str.strip('/')
 	subjects['Link'] = url + subjects['Code'] + '/'
-	subj_re = re.compile("\([A-Z]{3}\)")
+	subj_re = re.compile(r"\([A-Z]{3}\)")
 	subjects.Subject = subjects.Subject.str.replace(subj_re, '').str.strip()
 	return subjects
 
@@ -40,7 +44,6 @@ def extract_codes(string, return_all = True):
 	if multiple codes are found and return_all is False, then returns an invalid code
 	Used in get_subjects.ipynb
 	'''
-	code_re = re.compile("[A-Z]{3}[ ]{0,1}[0-9]{4}")
 	codes = list({x.group(0) for x in re.finditer(code_re, string)})
 	if return_all or len(codes) == 1:
 		return codes
@@ -52,7 +55,6 @@ def extract_credits(string):
 	(Assuming the string is the title of a course)
 	Used in get_subjects.ipynb
 	'''
-	credit_re = re.compile("\([0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})\)|[0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})")
 	credits = list({int(x.group(0).split(' ')[0].strip('(')) for x in re.finditer(credit_re, string)})
 	if len(credits) == 1:
 		return credits
@@ -64,8 +66,6 @@ def get_courses(link):
 	Used in get_subjects.ipynb
 	'''
 	courses = []
-	code_re = re.compile("[A-Z]{3}[ ]{0,1}[0-9]{4}")
-	credit_re = re.compile("\([0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})\)|[0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})")
 	raw_courses = BeautifulSoup(requests.get(link).text, 'html.parser')
 	raw_courses = raw_courses.find_all('div', attrs = {'class':'courseblock'})
 	for course in raw_courses:
@@ -168,7 +168,7 @@ def get_subjects():
 	'''
 	return pd.read_csv("uOttawa_subjects.csv")
 
-def get_courses(subjects = None):
+def read_courses(subjects = None):
 	'''
 	Returns a dictionary of pandas DataFrames of courses; keys are subject codes; takes data from the file created during scraping
 	If an iterable of subject codes is supplied, only those subjects are returned
