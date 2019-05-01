@@ -4,7 +4,7 @@ import urllib
 import pandas as pd
 import json
 from time import sleep, perf_counter as pf
-import re
+import regex as re
 
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':DES-CBC3-SHA'
 #timetable_url = 'https://web30.uottawa.ca/v3/SITS/timetable/Search.aspx'
@@ -137,12 +137,53 @@ def get_courses(link):
 		comp = comp.split(':', 1)[-1].strip()
 		comp = [x.strip() for x in comp.split('/')[-1].split(',')]
 		#getting the prerequisites from after the colon in the sentence
-		pre = pre.split(':', 1)[-1].strip()
-		#extracting dependencies from the prerequisite list
-		dep = extract_codes('.'.join([x for x in pre.split('.') if ('cannot' not in x) and ('Must' not in x)]))
-		dep = set(dep).difference({code})
+		pre, dep = parse_prereqs(pre)
+		# pre = pre.split(':', 1)[-1].strip()
+		# #extracting dependencies from the prerequisite list
+		# dep = extract_codes('.'.join([x for x in pre.split('.') if ('cannot' not in x) and ('Must' not in x)]))
+		# dep = set(dep).difference({code})
 		courses.append([code, title, credits, desc, comp, pre, dep])
 	return pd.DataFrame(courses, columns = ['code', 'title', 'credits', 'desc', 'components', 'prerequisites', 'dependencies'])
+
+def compile_prereq_patterns():
+	course_code_pattern = r"[A-Z]{3}\s*[0-9]{4,5}[A-Za-z]{0,1}"
+	not_real_course_codes = r".*[34]U.*|(?:an )?equivalent|Permission of the School|Permission de l'École|Permission de l'Institut|Approval of the instructor"
+	parsable_codes = r"(?:\(?(?:%s)\)?(?:, | or | ou )?)+" % course_code_pattern + '|' + not_real_course_codes
+	faculties = r"(?:[Mm]athematics|[Mm]athématiques|[Ss]cience)"
+
+	return {
+		"not_combined_for_credits" : re.compile(r"(?:(?<=^(?:(?:The )?[Cc]ourses |Les cours ))%s(?=(?: cannot be combined for units$| ne peuvent être combinés pour l'obtention de crédits$))|(?<=This course cannot be taken for units by any student who has previously received units for )%s$)|(?:This course cannot count for unit in any program in the Faculty of |Prerequisite: This course cannot count as a science elective for students in the Faculty of |Ce cours ne peut pas compter pour fin de crédits dans un programme de la Faculté des |Préalable : Ce cours ne peut pas compter comme cours au choix en sciences pour les étudiants et étudiantes de la Faculté des )%s" % (parsable_codes, course_code_pattern, faculties)),
+		"prerequisites" : re.compile(r"(?<=^(?:Prerequisite|Préalable)s?\s*:\s*)(?:One of )?%s$" % parsable_codes),
+		"corequisite" : re.compile(r"%s(?= are prerequisite or corequisite to %s$)" % (parsable_codes, course_code_pattern)),
+		"CGPA_requirements" : re.compile(r"(?:Prerequisite: The student must have a minimum CGPA of \d(?:\.|,)\d|Préalable : L'étudiant ou l'étudiante doit avoir conservé une MPC minimale de \d(?:\.|,)\d|Seulement disponible pour les étudiants ayant une MPC de \d,\d et plus)|Open only to students whose cumulative grade point average is \d\.\d or over(?: and the permission of the Department| et avoir la permission du Département)?(?:, and who have completed all the first(?: and second)? year [A-Z]{3} core courses of their program| et ayant réussi tous les cours [A-Z]{3} du tronc commun de niveaux 1000(?: et 2000)? de leur programme)?$"),
+		"credit_Count" : re.compile(r"Préalable ?: \d+ crédits de cours(?: en)?(?: %s)? \(?(?:[A-Z]{3}\)?(?: ou [A-Z]{3})* de niveau \d000(?: ou supérieur)*|universitaire)|Prerequisite: \d+(?: course)? units (?:of|in)(?: %s)? \(?(?:[A-Z]{3}\)?(?: or [A-Z]{3})*(?: courses)? at(?: the| level)? \d000(?: level)?(?: or above)?|university-level courses?)$" % (faculties, faculties)),
+
+		"prior_knowledge" : re.compile(r"Prerequisites: familiarity with basic concepts in .*|(?:or )?A basic knowledge of .*$|Prerequisite: Some familiarity with .*"),
+		"additional_prereqs" : re.compile(r"Additional prerequisites may be imposed depending on the topic|Des préalables supplémentaires peuvent s'appliquer selon le sujet du cours"),
+		"permission" : re.compile(r"Permission of the Department is required$|Permission du Département est requise$"),
+		"interview" : re.compile(r"Interview with Professor is required$|Entrevue avec le professeur est requise$"),
+
+		"also_offered_as" : re.compile(r"(?<=^(?:Also offered as |Aussi offert sous la cote ))%s$" % course_code_pattern),
+		"primarily_intended_for" : re.compile(r"[Tt]his course is .* for .*$|Ce cours .* principalement(?: destiné)? aux étudiants et étudiantes .*$"),
+		"previously" : re.compile(r"(?:Previously|Antérieurement) %s" % course_code_pattern),
+	}
+
+
+#TODO: this is a terrible place to have this
+prereq_patterns = compile_prereq_patterns()
+
+def parse_prereqs(prereqStr):
+
+	sentences = prereqStr.split('. ')
+	for sentence in sentences:
+		for pattern in prereq_patterns.values():
+			if pattern.search(sentence):
+				break
+		else:
+			print(sentence)
+
+	return None, None
+
 
 def get_course_tables(links):
 	'''
