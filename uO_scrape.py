@@ -144,21 +144,25 @@ def get_courses(link):
 		# #extracting dependencies from the prerequisite list
 		# dep = extract_codes('.'.join([x for x in pre.split('.') if ('cannot' not in x) and ('Must' not in x)]))
 		# dep = set(dep).difference({code})
-		courses.append([code, title, credits, desc, comp, pre, dep])
+		courses.append([code, title, credits, desc, comp, pre.prereqs, dep])
 	return pd.DataFrame(courses, columns = ['code', 'title', 'credits', 'desc', 'components', 'prerequisites', 'dependencies'])
 
 class Prereq:
 	'''
 	Object used to hold information about prereqs and other information that is provided in the courseblockextra section of the uOttawa catalogue
 	'''
+	credit_count_code = "YYY0000"
+	code_4U = "YYY0001"
+
 	course_code_pattern = r"[A-Z]{3}\s*[0-9]{4,5}[A-Za-z]{0,1}"
-	not_real_course_codes = r".*[34]U.*|(?:an )?equivalent|Permission of the School|Permission de l'École|Permission de l'Institut|Approval of the instructor"
+	not_real_course_codes = r"(?P<ForU>.*[34]U.*)|(?:an )?equivalent|Permission of the School|Permission de l'(?:École|Institut)|Approval of the instructor|Permission du Département"
 	faculties = r"(?:[Mm]athematics|[Mm]athématiques|[Ss]cience)"
-	credit_count = r"\d+ crédits de cours(?: en)?(?: %s)? \(?(?:[A-Z]{3}\)?(?: ou [A-Z]{3})* de niveau \d000(?: ou supérieur)*|universitaire)|\d+(?: course)? units (?:of|in)(?: %s)? \(?(?:[A-Z]{3}\)?(?: or [A-Z]{3})*(?: courses)? at(?: the| level)? \d000(?: level)?(?: or above)?|university-level courses?)" % (faculties, faculties)
-	parsable_codes = r"(?:\(*(?:%s)\)*(?:, |/| or | ou | and | et | or for honors %s students: | ou pour les étudiants et étudiantes inscrits aux programmes spécialisés en %s : )?)+" % (course_code_pattern + '|' + not_real_course_codes + '|(?:' + credit_count + ')', faculties, faculties)
+	credit_count = r"(?P<credit_count>\d+ crédits de cours(?: en)?(?: %s)? \(?(?:[A-Z]{3}\)?(?: ou [A-Z]{3})* de niveau \d000(?: ou supérieur)*|universitaire)|\d+(?: course)? units (?:of|in)(?: %s)? \(?(?:[A-Z]{3}\)?(?: or [A-Z]{3})*(?: courses)? at(?: the| level)? \d000(?: level)?(?: or above)?|university-level courses?))" % (faculties, faculties)
+	for_special_program = r"(?P<for_special_program> or for honors %s students: | ou pour les étudiants et étudiantes inscrits aux programmes spécialisés en %s : )" % (faculties, faculties)
+	parsable_codes = r"(?:\(*(?:%s)\)*(?:, |/| or | ou | and | et |%s)?)+" % (course_code_pattern + '|' + not_real_course_codes + '|(?:' + credit_count + ')', for_special_program)
 
 	patterns = {
-		"not_combined_for_credits" : re.compile(r"(?:(?<=^(?:(?:The )?[Cc]ourses |Les cours ))%s(?=(?: cannot be combined for units$| ne peuvent être combinés pour l'obtention de crédits$))|(?<=This course cannot be taken for units by any student who has previously received units for )%s$)" % (parsable_codes, course_code_pattern)),
+		"not_combined_for_credits" : re.compile(r"(?:(?<=^(?:(?:The )?[Cc]ourses |Les cours ))%s(?=(?: cannot be combined for (?:units|credits)$| ne peuvent être combinés pour l'obtention de crédits$))|(?<=This course cannot be taken for units by any student who has previously received units for )%s$)" % (parsable_codes, course_code_pattern)),
 		"no_credits_in_program" : re.compile(r"(?:This course cannot count for unit in any program in the Faculty of |Prerequisite: This course cannot count as a %s elective for students in the Faculty of |Ce cours ne peut pas compter pour fin de crédits dans un programme de la Faculté des |Préalable : Ce cours ne peut pas compter comme cours au choix en %s pour les étudiants et étudiantes de la Faculté des )%s" % (faculties, faculties, faculties)),
 		"prerequisites" : re.compile(r"(?<=^(?:/ )?(?:Prerequisite|Préalable)s?\s*:\s*(?:One of )?)%s$" % parsable_codes),
 		"corequisite" : re.compile(r"(?:Corequisite|Concomitant)\s*:\s*%s|%s(?= are prerequisite or corequisite to %s$)|(?<=Les cours )%s(?= sont préalables ou concomitants à %s$)" % (parsable_codes, parsable_codes, course_code_pattern, parsable_codes, course_code_pattern)),
@@ -168,7 +172,7 @@ class Prereq:
 
 		"prior_knowledge" : re.compile(r"Prerequisites: familiarity with basic concepts in .*|(?:or )?A basic knowledge of .*$|Prerequisite: Some familiarity with .*"),
 		"additional_prereqs" : re.compile(r"Additional prerequisites may be imposed depending on the topic|Des préalables supplémentaires peuvent s'appliquer selon le sujet du cours"),
-		"permission" : re.compile(r"Permission of the Department is required$|Permission du Département est requise$"),
+		"permission" : re.compile(r"Permission of the Department is required$|Permission du Département est requise.?$"),	#TODO: This should be combined with "not_real_course_codes" or be moved here on it's own
 		"interview" : re.compile(r"Interview with Professor is required$|Entrevue avec le professeur est requise$"),
 
 		"also_offered_as" : re.compile(r"(?<=^(?:Also offered as |Aussi offert sous la cote ))%s$" % course_code_pattern),
@@ -176,13 +180,13 @@ class Prereq:
 		"previously" : re.compile(r"(?:Previously|Antérieurement) %s" % course_code_pattern),
 	}
 
-	def parse_codes(parsable):
+	def parse_codes(self, parsable):
 		'''
 		Truns a string of parsable codes into a list of prerequiste groups that are each sufficient to get into the course
 		A string of parsable codes is defined as any string of courses codes seperated by any of [/ or ou , and et] and parentheses for priotirty.
 		'''
 
-		parsable = parsable.replace(" ou ", " or ").replace("/", " or ").replace(" and ", ", ").replace(" et ", ", ")
+		parsable = self.match_to_string(parsable)
 
 		#Replace all parenthesised groups with a unique fake course code
 		replacement_codes = ("XXX%04d" % i for i in it.count())
@@ -199,19 +203,26 @@ class Prereq:
 			else:	#When we reach the end of the string we're done
 				break
 
-		#Replace " or " groups with fake course codes as well
-		parsable = parsable.split(', ')
-		for i, item in enumerate(parsable):
-			if " or " in item:
-				code = next(replacement_codes)
-				codes.append((code, item))
-				parsable[i] = code
+		#Add final group to the codes array to handle top level or groups
+		code = next(replacement_codes)
+		codes.append((code, parsable))
+		prereq_groups = [[code]]
 
-		prereq_groups = [parsable]
+		#Handle mixed "and" and "or" groups into individual codes
+		new_codes = []
+		for code, replacement in codes:
+			replacement = replacement.split(", ")
+			if len(replacement) > 1:
+				for i, item in enumerate(replacement):
+					if " or " in item:
+						new_code = next(replacement_codes)
+						new_codes.append((new_code, item))
+						replacement[i] = new_code
+			new_codes.append((code, ", ".join(replacement)))
+		codes = new_codes
 
 		#Sub fake codes back in for a list of possible prereq groups
 		for code, replacement in reversed(codes):
-			print(prereq_groups)
 			while True:	#This is to overcome the problem with modifying a list as you iterate over it, kind of a hack but it works
 				for group in prereq_groups:
 					if code in group:
@@ -224,32 +235,65 @@ class Prereq:
 							for c in replacement.split(" or "):
 								prereq_groups.append(group + [c])
 							break
+						else:
+							group.remove(code)
+							group += [replacement]
 				else:
 					break
 
 		return prereq_groups
 
 
-	parsers = {
-		"prerequisites" : parse_codes
-	}
+
+	def match_to_string(self, match_obj):
+		'''
+		Converts a match object to a string that can be parsed
+		by the parse_codes function and populates some substitute
+		course code values if present.
+		'''
+
+		match_str = match_obj.group()
+
+		# The try is for when the pattern didn't include those groups,
+		# the if is if they were included but not part of the match
+		try:
+			if match_obj.group("credit_count") != None:
+				self.credit_count_sub = match_obj.group("credit_count")
+				match_str = match_str.replace(match_obj.group("credit_count"), self.credit_count_code)
+		except IndexError:
+			pass
+		try:
+			if match_obj.group("ForU") != None:
+				self.sub_4U = match_obj.group("ForU")
+				match_str = match_str.replace(match_obj.group("ForU"), self.code_4U)
+		except IndexError:
+			pass
+		try:
+			if match_obj.group("for_special_program") != None:
+				self.for_special_program_sub = match_obj.group("for_special_program")
+				match_str = "(" + match_str + ")"
+				match_str = match_str.replace(match_obj.group("for_special_program"), ") or (")
+		except IndexError:
+			pass
+
+		match_str = match_str.replace(" ou ", " or ").replace("/", " or ").replace(" and ", ", ").replace(" et ", ", ")
+
+		return match_str
 
 	def __init__(self, prereqStr):
+
+		self.prereqs = []
 
 		sentences = filter(None, prereqStr.replace(' / ', '. ').split('. '))
 		for sentence in sentences:
 			for key, pattern in self.patterns.items():
 				match = pattern.search(sentence)
 				if match:
+					if key == "prerequisites":
+						self.prereqs = self.parse_codes(match)
 					break
-					# print(key)
-					# print(match.group())
-					# print(match.string)
-					# print()
 			else:
-				# pass
-				print(sentence)
-
+				pass
 
 def get_course_tables(links):
 	'''
