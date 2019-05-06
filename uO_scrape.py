@@ -6,12 +6,10 @@ import json
 from time import sleep, perf_counter as pf
 import regex as re
 import itertools as it
+import patterns as pt
 
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':DES-CBC3-SHA'
 #timetable_url = 'https://web30.uottawa.ca/v3/SITS/timetable/Search.aspx'
-code_re = re.compile("[A-Z]{3}[ ]{0,1}[0-9]{4,5}[A-Za-z]{0,1}")
-credit_re = re.compile(r"\([0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})\)|[0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})")
-
 
 def scrape_subjects():
 	'''
@@ -25,8 +23,7 @@ def scrape_subjects():
 	soup = BeautifulSoup(page, 'html.parser')
 	content = soup.find('div', attrs = {'class':'az_sitemap'})
 
-	href_re = re.compile("[/]{0,1}en/courses/[A-Za-z]{1,}[/]{0,1}")
-	subj_tags = content.find_all('a', attrs = {'href':href_re})
+	subj_tags = content.find_all('a', attrs = {'href':pt.href_re})
 
 	subj_table = []
 	for tag in subj_tags:
@@ -35,8 +32,7 @@ def scrape_subjects():
 	subjects = pd.DataFrame(subj_table, columns=['Subject', 'Code'])
 	subjects['Code'] = subjects['Code'].str.strip().str.strip('/')
 	subjects['Link'] = url + subjects['Code'] + '/'
-	subj_re = re.compile(r"\([A-Z]{3}\)")
-	subjects.Subject = subjects.Subject.str.replace(subj_re, '').str.strip()
+	subjects.Subject = subjects.Subject.str.replace(pt.subj_re, '').str.strip()
 	return subjects
 
 def extract_codes(string, return_all = True):
@@ -45,7 +41,7 @@ def extract_codes(string, return_all = True):
 	if multiple codes are found and return_all is False, then returns an invalid code
 	Used in get_subjects.ipynb
 	'''
-	codes = list({x.group(0) for x in re.finditer(code_re, string)})
+	codes = list({x.group(0) for x in re.finditer(pt.code_re, string)})
 	if return_all or len(codes) == 1:
 		return codes
 	return 'XXX 0000'
@@ -56,7 +52,7 @@ def extract_credits(string):
 	(Assuming the string is the title of a course)
 	Used in get_subjects.ipynb
 	'''
-	credits = list({int(x.group(0).split(' ')[0].strip('(')) for x in re.finditer(credit_re, string)})
+	credits = list({int(x.group(0).split(' ')[0].strip('(')) for x in re.finditer(pt.credit_re, string)})
 	if len(credits) == 1:
 		return credits
 	return [0]
@@ -78,8 +74,8 @@ def get_courses(link):
 		else:
 			code = extract_codes(title, False)[0]
 			credits = extract_credits(title)[0]
-			title = re.sub(code_re, '', title)
-			title = re.sub(credit_re, '', title).strip()
+			title = re.sub(pt.code_re, '', title)
+			title = re.sub(pt.credit_re, '', title).strip()
 		try:
 			desc = course.find('p', attrs={'class':'courseblockdesc'})
 			desc = desc.text.replace('\xa0', ' ').strip()
@@ -152,32 +148,6 @@ class Prereq:
 		"credit_count" : "YYY0000",
 		"ForU" : "YYY0001",
 		"for_special_program" : ") or ("
-	}
-
-	course_code_pattern = r"[A-Z]{3,4}\s*[0-9]{4,5}[A-Za-z]{0,1}"
-	not_real_course_codes = r"(?P<ForU>.*[34]U.*)|(?:an )?equivalent|Permission of the School|Permission de l'(?:École|Institut)|Approval of the instructor|Permission du Département"
-	faculties = r"(?:[Mm]athematics|[Mm]athématiques|[Ss]cience)"
-	credit_count = r"(?P<credit_count>\d+ crédits de cours(?: en)?(?: %s)? \(?(?:[A-Z]{3}\)?(?: ou [A-Z]{3})* de niveau \d000(?: ou supérieur)*|universitaire)|\d+(?: course)? units (?:of|in)(?: %s)? \(?(?:[A-Z]{3}\)?(?: or [A-Z]{3})*(?: courses)? at(?: the| level)? \d000(?: level)?(?: or above)?|university-level courses?))" % (faculties, faculties)
-	for_special_program = r"(?P<for_special_program> or for honors %s students: | ou pour les étudiants et étudiantes inscrits aux programmes spécialisés en %s : )" % (faculties, faculties)
-	parsable_codes = r"(?:\(*(?:%s)\)*(?:, |/| or | ou | and | et |%s)?)+" % (course_code_pattern + '|' + not_real_course_codes + '|(?:' + credit_count + ')', for_special_program)
-
-	patterns = {
-		"not_combined_for_credits" : re.compile(r"(?:(?<=^(?:(?:The )?[Cc]ourses |Les cours ))%s(?=(?: cannot be combined for (?:units|credits)$| ne peuvent être combinés pour l'obtention de crédits$))|(?<=This course cannot be taken for units by any student who has previously received units for )%s$)" % (parsable_codes, course_code_pattern)),
-		"no_credits_in_program" : re.compile(r"(?:This course cannot count for unit in any program in the Faculty of |Prerequisite: This course cannot count as a %s elective for students in the Faculty of |Ce cours ne peut pas compter pour fin de crédits dans un programme de la Faculté des |Préalable : Ce cours ne peut pas compter comme cours au choix en %s pour les étudiants et étudiantes de la Faculté des )%s" % (faculties, faculties, faculties)),
-		"prerequisites" : re.compile(r"(?<=^(?:/ )?(?:Prerequisite|Préalable)s?\s*:\s*(?:One of )?)%s$" % parsable_codes),
-		"corequisite" : re.compile(r"(?:Corequisite|Concomitant)\s*:\s*%s|%s(?= are prerequisite or corequisite to %s$)|(?<=Les cours )%s(?= sont préalables ou concomitants à %s$)" % (parsable_codes, parsable_codes, course_code_pattern, parsable_codes, course_code_pattern)),
-		"CGPA_requirements" : re.compile(r"(?:Prerequisite: The student must have a minimum CGPA of \d(?:\.|,)\d|Préalable : L'étudiant ou l'étudiante doit avoir conservé une MPC minimale de \d(?:\.|,)\d|Seulement disponible pour les étudiants ayant une MPC de \d,\d et plus)|Open only to students whose cumulative grade point average is \d\.\d or over(?: and the permission of the Department| et avoir la permission du Département)?(?:, and who have completed all the first(?: and second)? year [A-Z]{3} core courses of their program| et ayant réussi tous les cours [A-Z]{3} du tronc commun de niveaux 1000(?: et 2000)? de leur programme)?$"),
-		# "credit_count" : re.compile(r"Préalable ?: \d+ crédits de cours(?: en)?(?: %s)? \(?(?:[A-Z]{3}\)?(?: ou [A-Z]{3})* de niveau \d000(?: ou supérieur)*|universitaire)|Prerequisite: \d+(?: course)? units (?:of|in)(?: %s)? \(?(?:[A-Z]{3}\)?(?: or [A-Z]{3})*(?: courses)? at(?: the| level)? \d000(?: level)?(?: or above)?|university-level courses?)$" % (faculties, faculties)),
-		#TODO: do some testing to see if you still need this seperate or if it's ok only being part of the prerequisite pattern
-
-		"prior_knowledge" : re.compile(r"Prerequisites: familiarity with basic concepts in .*|(?:or )?A basic knowledge of .*$|Prerequisite: Some familiarity with .*"),
-		"additional_prereqs" : re.compile(r"Additional prerequisites may be imposed depending on the topic|Des préalables supplémentaires peuvent s'appliquer selon le sujet du cours"),
-		"permission" : re.compile(r"Permission of the Department is required$|Permission du Département est requise.?$"),	#TODO: This should be combined with "not_real_course_codes" or be moved here on it's own
-		"interview" : re.compile(r"Interview with Professor is required$|Entrevue avec le professeur est requise$"),
-
-		"also_offered_as" : re.compile(r"(?<=^(?:Also offered as |Aussi offert sous la cote ))%s$" % course_code_pattern),
-		"primarily_intended_for" : re.compile(r"[Tt]his course is .* for .*$|Ce cours .* principalement(?: destiné)? aux étudiants et étudiantes .*$"),
-		"previously" : re.compile(r"(?:Previously|Antérieurement) %s" % course_code_pattern),
 	}
 
 	def parse_codes(self, parsable):
@@ -282,7 +252,7 @@ class Prereq:
 
 		sentences = filter(None, prereq_str.replace(' / ', '. ').split('. '))
 		for sentence in sentences:
-			for key, pattern in self.patterns.items():
+			for key, pattern in pt.prereq.items():
 				match = pattern.search(sentence)
 				if match is not None:
 					if key == "prerequisites":
@@ -441,7 +411,7 @@ def get_sections(shortlink):
 	sch = BeautifulSoup(r.text, 'html.parser')
 	sections_table = sch.find('div', attrs={'id':'schedule'})
 
-	sections_table = sections_table.find_all('div', attrs={'id':re.compile('[0-9]{1,}'), 'class':'schedule'})
+	sections_table = sections_table.find_all('div', attrs={'id':pt.numbers_re, 'class':'schedule'})
 
 	sections = []
 	for section in sections_table:
