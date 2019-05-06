@@ -4,13 +4,12 @@ import urllib
 import pandas as pd
 import json
 from time import sleep, perf_counter as pf
-import re
+import regex as re
+import itertools as it
+import patterns as pt
 
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':DES-CBC3-SHA'
 #timetable_url = 'https://web30.uottawa.ca/v3/SITS/timetable/Search.aspx'
-code_re = re.compile("[A-Z]{3}[ ]{0,1}[0-9]{4,5}[A-Za-z]{0,1}")
-credit_re = re.compile(r"\([0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})\)|[0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})")
-
 
 def scrape_subjects():
 	'''
@@ -24,8 +23,7 @@ def scrape_subjects():
 	soup = BeautifulSoup(page, 'html.parser')
 	content = soup.find('div', attrs = {'class':'az_sitemap'})
 
-	href_re = re.compile("[/]{0,1}en/courses/[A-Za-z]{1,}[/]{0,1}")
-	subj_tags = content.find_all('a', attrs = {'href':href_re})
+	subj_tags = content.find_all('a', attrs = {'href':pt.href_re})
 
 	subj_table = []
 	for tag in subj_tags:
@@ -34,8 +32,7 @@ def scrape_subjects():
 	subjects = pd.DataFrame(subj_table, columns=['Subject', 'Code'])
 	subjects['Code'] = subjects['Code'].str.strip().str.strip('/')
 	subjects['Link'] = url + subjects['Code'] + '/'
-	subj_re = re.compile(r"\([A-Z]{3}\)")
-	subjects.Subject = subjects.Subject.str.replace(subj_re, '').str.strip()
+	subjects.Subject = subjects.Subject.str.replace(pt.subj_re, '').str.strip()
 	return subjects
 
 def extract_codes(string, return_all = True):
@@ -44,7 +41,7 @@ def extract_codes(string, return_all = True):
 	if multiple codes are found and return_all is False, then returns an invalid code
 	Used in get_subjects.ipynb
 	'''
-	codes = list({x.group(0) for x in re.finditer(code_re, string)})
+	codes = list({x.group(0) for x in re.finditer(pt.code_re, string)})
 	if return_all or len(codes) == 1:
 		return codes
 	return 'XXX 0000'
@@ -55,7 +52,7 @@ def extract_credits(string):
 	(Assuming the string is the title of a course)
 	Used in get_subjects.ipynb
 	'''
-	credits = list({int(x.group(0).split(' ')[0].strip('(')) for x in re.finditer(credit_re, string)})
+	credits = list({int(x.group(0).split(' ')[0].strip('(')) for x in re.finditer(pt.credit_re, string)})
 	if len(credits) == 1:
 		return credits
 	return [0]
@@ -77,8 +74,8 @@ def get_courses(link):
 		else:
 			code = extract_codes(title, False)[0]
 			credits = extract_credits(title)[0]
-			title = re.sub(code_re, '', title)
-			title = re.sub(credit_re, '', title).strip()
+			title = re.sub(pt.code_re, '', title)
+			title = re.sub(pt.credit_re, '', title).strip()
 		try:
 			desc = course.find('p', attrs={'class':'courseblockdesc'})
 			desc = desc.text.replace('\xa0', ' ').strip()
@@ -137,12 +134,130 @@ def get_courses(link):
 		comp = comp.split(':', 1)[-1].strip()
 		comp = [x.strip() for x in comp.split('/')[-1].split(',')]
 		#getting the prerequisites from after the colon in the sentence
+		dep = Prereq(pre).prereqs
 		pre = pre.split(':', 1)[-1].strip()
-		#extracting dependencies from the prerequisite list
-		dep = extract_codes('.'.join([x for x in pre.split('.') if ('cannot' not in x) and ('Must' not in x)]))
-		dep = set(dep).difference({code})
+		#TODO: ideally we would like to save the whole Prereq object to the dataframe, but since it does not output to json, using this in the meantime
 		courses.append([code, title, credits, desc, comp, pre, dep])
 	return pd.DataFrame(courses, columns = ['code', 'title', 'credits', 'desc', 'components', 'prerequisites', 'dependencies'])
+
+class Prereq:
+	'''
+	Object used to hold information about prereqs and other information that is provided in the courseblockextra section of the uOttawa catalogue
+	'''
+	rep_codes = {
+		"credit_count" : "YYY0000",
+		"ForU" : "YYY0001",
+		"for_special_program" : ") or ("
+	}
+
+	def parse_codes(self, parsable):
+		'''
+		Turns a string of parsable codes into a list of prerequiste groups that are each sufficient to get into the course
+		A string of parsable codes is defined as any string of course codes seperated by any of [/ or ou , and et] and parentheses for priotirty.
+		'''
+
+		parsable = self.match_to_string(parsable)
+
+		#Replace all parenthesised groups with a unique fake course code. This makes it possible to look at
+		#each group as a single course until we sub them back in later and apply the rules we need for them.
+		#Essentially this is priority of operations but it's easier to do them in reverse here
+		replacement_codes = ("XXX%04d" % i for i in it.count())
+		codes = []
+		for code in replacement_codes:
+			pos = -1
+			for i, c in enumerate(parsable):
+				if c == '(':
+					pos = i
+				elif c == ')':
+					codes.append((code, parsable[pos+1:i]))
+					parsable = parsable[:pos] + code + parsable[i+1:]
+					break	#This increments to the next replacement code and starts from the beginning of the string
+			else:	#When we reach the end of the string we're done
+				break
+
+		#Add final group to the codes array to handle top level or groups
+		code = next(replacement_codes)
+		codes.append((code, parsable))
+		prereq_groups = [[code]]
+
+		#Handle mixed "and" and "or" groups into individual codes
+		new_codes = []
+		for code, replacement in codes:
+			replacement = replacement.split(", ")
+			if len(replacement) > 1:
+				for i, item in enumerate(replacement):
+					if " or " in item:
+						new_code = next(replacement_codes)
+						new_codes.append((new_code, item))
+						replacement[i] = new_code
+			new_codes.append((code, ", ".join(replacement)))
+		codes = new_codes
+
+		#Sub fake codes back in for a list of possible prereq groups
+		for code, replacement in reversed(codes):
+			while True:	#This is to overcome the problem with modifying a list as you iterate over it, kind of a hack but it works
+				for group in prereq_groups:
+					if code in group:
+						if ", " in replacement:
+							group.remove(code)
+							group += replacement.split(", ")
+						elif " or " in replacement:
+							prereq_groups.remove(group)
+							group.remove(code)
+							for c in replacement.split(" or "):
+								prereq_groups.append(group + [c])
+							break
+						else:
+							group.remove(code)
+							group += [replacement]
+				else:
+					break
+
+		return prereq_groups
+
+
+
+	def match_to_string(self, match_obj):
+		'''
+		Converts a match object to a string that can be parsed
+		by the parse_codes function and populates some substitute
+		course code values if present.
+		'''
+
+		match_str = match_obj.group()
+		match_str = "(" + match_str + ")"
+
+		# The try is for when the pattern didn't include those groups,
+		# the if is if they were included but not part of the match
+		for key, value in self.rep_codes.items():
+			try:
+				if match_obj.group(key) != None:
+					self.subs[key] = match_obj.group(key)
+					match_str = match_str.replace(match_obj.group(key), value)
+			except IndexError:
+				pass
+
+		match_str = match_str.replace(" ou ", " or ").replace("/", " or ").replace(" and ", ", ").replace(" et ", ", ")
+
+		return match_str
+
+	def __init__(self, prereq_str):
+
+		self.prereqs = []
+		self.subs = {
+			"credit_count" : "",
+			"ForU" : "",
+			"for_special_program" : ""
+		}
+
+		sentences = filter(None, prereq_str.replace(' / ', '. ').split('. '))
+		for sentence in sentences:
+			for key, pattern in pt.prereq.items():
+				match = pattern.search(sentence)
+				if match is not None:
+					if key == "prerequisites":
+						self.prereqs = self.parse_codes(match)
+					break
 
 def get_course_tables(links):
 	'''
@@ -296,7 +411,7 @@ def get_sections(shortlink):
 	sch = BeautifulSoup(r.text, 'html.parser')
 	sections_table = sch.find('div', attrs={'id':'schedule'})
 
-	sections_table = sections_table.find_all('div', attrs={'id':re.compile('[0-9]{1,}'), 'class':'schedule'})
+	sections_table = sections_table.find_all('div', attrs={'id':pt.numbers_re, 'class':'schedule'})
 
 	sections = []
 	for section in sections_table:
