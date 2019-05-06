@@ -138,23 +138,23 @@ def get_courses(link):
 		comp = comp.split(':', 1)[-1].strip()
 		comp = [x.strip() for x in comp.split('/')[-1].split(',')]
 		#getting the prerequisites from after the colon in the sentence
-		pre = Prereq(pre)
-		dep = None
-		# pre = pre.split(':', 1)[-1].strip()
-		# #extracting dependencies from the prerequisite list
-		# dep = extract_codes('.'.join([x for x in pre.split('.') if ('cannot' not in x) and ('Must' not in x)]))
-		# dep = set(dep).difference({code})
-		courses.append([code, title, credits, desc, comp, pre.prereqs, dep])
+		dep = Prereq(pre).prereqs
+		pre = pre.split(':', 1)[-1].strip()
+		#TODO: ideally we would like to save the whole Prereq object to the dataframe, but since it does not output to json, using this in the meantime
+		courses.append([code, title, credits, desc, comp, pre, dep])
 	return pd.DataFrame(courses, columns = ['code', 'title', 'credits', 'desc', 'components', 'prerequisites', 'dependencies'])
 
 class Prereq:
 	'''
 	Object used to hold information about prereqs and other information that is provided in the courseblockextra section of the uOttawa catalogue
 	'''
-	credit_count_code = "YYY0000"
-	code_4U = "YYY0001"
+	rep_codes = {
+		"credit_count" : "YYY0000",
+		"ForU" : "YYY0001",
+		"for_special_program" : ") or ("
+	}
 
-	course_code_pattern = r"[A-Z]{3}\s*[0-9]{4,5}[A-Za-z]{0,1}"
+	course_code_pattern = r"[A-Z]{3,4}\s*[0-9]{4,5}[A-Za-z]{0,1}"
 	not_real_course_codes = r"(?P<ForU>.*[34]U.*)|(?:an )?equivalent|Permission of the School|Permission de l'(?:École|Institut)|Approval of the instructor|Permission du Département"
 	faculties = r"(?:[Mm]athematics|[Mm]athématiques|[Ss]cience)"
 	credit_count = r"(?P<credit_count>\d+ crédits de cours(?: en)?(?: %s)? \(?(?:[A-Z]{3}\)?(?: ou [A-Z]{3})* de niveau \d000(?: ou supérieur)*|universitaire)|\d+(?: course)? units (?:of|in)(?: %s)? \(?(?:[A-Z]{3}\)?(?: or [A-Z]{3})*(?: courses)? at(?: the| level)? \d000(?: level)?(?: or above)?|university-level courses?))" % (faculties, faculties)
@@ -182,13 +182,15 @@ class Prereq:
 
 	def parse_codes(self, parsable):
 		'''
-		Truns a string of parsable codes into a list of prerequiste groups that are each sufficient to get into the course
-		A string of parsable codes is defined as any string of courses codes seperated by any of [/ or ou , and et] and parentheses for priotirty.
+		Turns a string of parsable codes into a list of prerequiste groups that are each sufficient to get into the course
+		A string of parsable codes is defined as any string of course codes seperated by any of [/ or ou , and et] and parentheses for priotirty.
 		'''
 
 		parsable = self.match_to_string(parsable)
 
-		#Replace all parenthesised groups with a unique fake course code
+		#Replace all parenthesised groups with a unique fake course code. This makes it possible to look at
+		#each group as a single course until we sub them back in later and apply the rules we need for them.
+		#Essentially this is priority of operations but it's easier to do them in reverse here
 		replacement_codes = ("XXX%04d" % i for i in it.count())
 		codes = []
 		for code in replacement_codes:
@@ -253,47 +255,39 @@ class Prereq:
 		'''
 
 		match_str = match_obj.group()
+		match_str = "(" + match_str + ")"
 
 		# The try is for when the pattern didn't include those groups,
 		# the if is if they were included but not part of the match
-		try:
-			if match_obj.group("credit_count") != None:
-				self.credit_count_sub = match_obj.group("credit_count")
-				match_str = match_str.replace(match_obj.group("credit_count"), self.credit_count_code)
-		except IndexError:
-			pass
-		try:
-			if match_obj.group("ForU") != None:
-				self.sub_4U = match_obj.group("ForU")
-				match_str = match_str.replace(match_obj.group("ForU"), self.code_4U)
-		except IndexError:
-			pass
-		try:
-			if match_obj.group("for_special_program") != None:
-				self.for_special_program_sub = match_obj.group("for_special_program")
-				match_str = "(" + match_str + ")"
-				match_str = match_str.replace(match_obj.group("for_special_program"), ") or (")
-		except IndexError:
-			pass
+		for key, value in self.rep_codes.items():
+			try:
+				if match_obj.group(key) != None:
+					self.subs[key] = match_obj.group(key)
+					match_str = match_str.replace(match_obj.group(key), value)
+			except IndexError:
+				pass
 
 		match_str = match_str.replace(" ou ", " or ").replace("/", " or ").replace(" and ", ", ").replace(" et ", ", ")
 
 		return match_str
 
-	def __init__(self, prereqStr):
+	def __init__(self, prereq_str):
 
 		self.prereqs = []
+		self.subs = {
+			"credit_count" : "",
+			"ForU" : "",
+			"for_special_program" : ""
+		}
 
-		sentences = filter(None, prereqStr.replace(' / ', '. ').split('. '))
+		sentences = filter(None, prereq_str.replace(' / ', '. ').split('. '))
 		for sentence in sentences:
 			for key, pattern in self.patterns.items():
 				match = pattern.search(sentence)
-				if match:
+				if match is not None:
 					if key == "prerequisites":
 						self.prereqs = self.parse_codes(match)
 					break
-			else:
-				pass
 
 def get_course_tables(links):
 	'''
