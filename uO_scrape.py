@@ -32,7 +32,7 @@ def scrape_subjects():
 	subjects = pd.DataFrame(subj_table, columns=['Subject', 'Code'])
 	subjects['Code'] = subjects['Code'].str.strip().str.strip('/')
 	subjects['Link'] = url + subjects['Code'] + '/'
-	subjects.Subject = subjects.Subject.str.replace(pt.subj_re, '').str.strip()
+	subjects.Subject = subjects.Subject.str.replace(pt.subj_re.pattern, '').str.strip()
 	return subjects
 
 def extract_codes(string, return_all = True):
