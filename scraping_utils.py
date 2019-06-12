@@ -9,9 +9,17 @@ import regex as re
 import itertools as it
 import patterns as pt
 
-requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':DES-CBC3-SHA'
+#requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':DES-CBC3-SHA'
 #timetable_url = 'https://web30.uottawa.ca/v3/SITS/timetable/Search.aspx'
+# Course Info Parameters
 course_url = 'https://catalogue.uottawa.ca/en/courses/'
+
+# Timetable Parameters
+with open("template_query.json", "r") as f:
+    old_form = json.load(f)
+term_to_num = {"fall": "9", "summer": "5", "winter":"1"}
+orig_link = 'https://uocampus.public.uottawa.ca/psc/csprpr9pub/EMPLOYEE/HRMS/c/UO_SR_AA_MODS.UO_PUB_CLSSRCH.GBL'
+default_headers={'Content-Type':"application/x-www-form-urlencoded"}
 
 #############################################################################
 # COURSE INFO SCRAPING
@@ -21,9 +29,7 @@ def _extract_codes(string, return_all = True):
     '''
     Returns course codes found in string; 
     if multiple codes are found and return_all is False, then returns an invalid code
-    Used in get_subjects.ipynb
-    '''
-    codes = list({x.group(0) for x in re.finditer(pt.code_re, string)})
+    Used in get_subjects.ipynb ''' codes = list({x.group(0) for x in re.finditer(pt.code_re, string)})
     if return_all or len(codes) == 1:
         return codes
     return 'XXX 0000'
@@ -270,48 +276,145 @@ def get_courses(link):
 # TIMETABLE SCRAPING
 #############################################################################
 
+# Querying Timetable
+def get_hidden_inputs(text):
+    return BeautifulSoup(text, 'html.parser').find_all("input", type="hidden")
 
+def update_form(old_form, new_form):
+        new_form = {x["id"]:x["value"] for x in new_form}
+        old_form.update({x:y for x, y in new_form.items() if y.strip() != ''})
+        old_form['ICAction'] = 'CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH'
 
-#############################################################################
-# FLOWS
-#############################################################################
+def _separate_requests_query():
+    r = requests.get(other_link)
+    new_form = get_hidden_inputs(r.text)
+    update_form(old_form, new_form)
+    r = requests.post(orig_link, data=old_form, headers=default_headers,
+                      cookies=r.cookies)
+    return r
 
+def format_query(year, term, subject, number):
+    query = old_form
+    term = term.lower()
+    query["CLASS_SRCH_WRK2_STRM$35$"] = "2" + str(year)[-2:] + term_to_num[term]
+    query["SSR_CLSRCH_WRK_SUBJECT$0"] = subject.lower()
+    query["SSR_CLSRCH_WRK_CATALOG_NBR$0"] = number
+    return query
 
-#@TODO move to scraping_flows.py
-def get_course_tables(links):
-    '''
-    Returns a dictionary of pandas DataFrames of courses from each of the links provided in links
-    The keys are the subject code portion of the link (the last bit separated by /)
-    Used in get_subjects.ipynb
-    '''
-    course_tables = dict()
-    for link in links:
-        code = link.strip('/').rsplit('/')[-1]
-        try:
-            course_tables[code] = get_courses(link)
-        except AttributeError as e:
-            print("Attribute Error:")
-            print(link)
-            print(e)
-            print("Continuing...")
-    return course_tables
+def run_query(query):
+    with requests.Session() as s:
+        new_form = BeautifulSoup(s.get(other_link).text, 
+                                 "html.parser").find_all("input", type="hidden")
+        new_form = {x["id"]:x["value"] for x in new_form}
+        query.update({x:y for x, y in new_form.items() if y.strip() != ''})
+        query['ICAction'] = 'CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH'
+        r = s.post(orig_link, data=query, 
+                   headers={'Content-Type':"application/x-www-form-urlencoded"})
+    return r.text
 
-#@TODO move these two reading functions elsewhere?
-def get_subjects():
-    '''
-    Returning a pandas DataFrame of the subjects parsed and saved
-    '''
-    return pd.read_csv("uOttawa_subjects.csv")
+# Extracting Timetable
+def group_by_eq(seq, equalizer):
+    equiv_classes = {}
+    for elt in seq:
+        eq = equalizer(elt)
+        if eq not in equiv_classes:
+            equiv_classes[eq] = []
+        equiv_classes[eq].append(elt)
+    return equiv_classes
 
-def read_courses(subjects = None):
-    '''
-    Returns a dictionary of pandas DataFrames of courses; keys are subject codes; takes data from the file created during scraping
-    If an iterable of subject codes is supplied, only those subjects are returned
-    '''
-    with open("uOttawa_courses.json") as f:
-        courses = json.load(f)
-    #course_tables = dict()
-    if subjects is None:
-        return {key:pd.read_json(courses[key]) for key in courses}
-    return {key:pd.read_json(courses[key]) for key in courses if key in subjects}
+def search_tag(tag, tag_name, attribute, string, matcher=(lambda x,y:
+                                                    re.search(x, y) is not None)):
+    try:
+        if re.compile(tag_name, re.I).match(tag.name):
+            return (tag.has_attr(attribute)
+                    and matcher(string, tag[attribute]))
+    except:
+        return False
+
+tag_is_course = lambda x: search_tag(x, "div", 
+                            "id", "win0divSSR_CLSRSLT_WRK_GROUPBOX2$", 
+                            lambda x,y: y.startswith(x))
+course_tag_is_title = lambda x: search_tag(x, "div", "id", 
+                            "win0divSSR_CLSRSLT_WRK_GROUPBOX2GP",
+                            lambda x,y: y.startswith(x))
+course_tag_is_section = lambda x: search_tag(x, "tr", "id", "trSSR_CLSRCH_MTG")
+section_tag_is_classname = lambda x: search_tag(x, "a", "id", "MTG_CLASSNAME")
+
+#@TODO Break into smaller subroutines
+def extract_timetables(string, year, term):
+    soup = BeautifulSoup(string, "lxml")
+
+    out = {"courses":[]}
+    courses = soup(tag_is_course)
+    
+    for course in courses:
+
+        title = course(course_tag_is_title)[0].text
+        subject_code, course_number = pt.code_re.search(
+                title).group().split()
+        title = pt.code_re.sub("", title).strip().strip("-").strip()
+        sections = course(course_tag_is_section)
+        course_out = {"subject_code": subject_code,
+                      "course_number":course_number,
+                      "course_name": title,
+                     "sections": []}
+        course_out_sections = []
+        
+        for section in sections:
+        
+            section_name = section(section_tag_is_classname)[0].contents
+            section_id, section_type = section_name[0], section_name[-1]
+            section_out = {"id": section_id.strip(),
+                           "type": section_id.rsplit("-")[-1].strip(),
+                           "session_type": section_type.strip()}
+            
+            rooms = [x.strip() 
+                    for x in section(lambda x: 
+                                        search_tag(x, "span", 
+                                                   "id", "MTG_ROOM"))[0].contents 
+                    if isinstance(x, str)]
+            instrs = [x.strip() 
+                    for x in section(lambda x: 
+                                        search_tag(x, "span", 
+                                                   "id", "MTG_INSTR"))[0].contents 
+                    if isinstance(x, str)]
+            topic = [x.strip() 
+                    for x in section(lambda x: 
+                                        search_tag(x, "span", 
+                                                   "id", "MTG_TOPIC"))[0].contents 
+                    if isinstance(x, str)]
+            dttms = [x.strip() 
+                    for x in section(lambda x: 
+                                        search_tag(x, "span", 
+                                                   "id", "MTG_DAYTIME"))[0].contents 
+                    if isinstance(x, str)]
+
+            n = min(map(len, (rooms, instrs, topic, dttms)))
+            if max(map(len, (rooms, instrs, topic, dttms))) > n:
+                print("warning: bad details length in course %s %s section %s"
+                      % (subject_code, course_number, section_name))
+            components = [{"room": rooms[i],
+                           "instructor": instrs[i],
+                           "day": dttms[i].strip().split(" ",
+                                     1)[0].strip().upper(),
+                           "start": dttms[i].strip().split(" ",
+                                     1)[-1].strip().split("-")[0].strip(),
+                           "end": dttms[i].strip().split(" ",
+                                     1)[-1].strip().split("-")[-1].strip(),
+                           "topic": topic[i],
+                           **section_out}
+                                         for i in range(n)]
+            course_out_sections += components
+        course_out_sections = group_by_eq(course_out_sections,
+                                          lambda x: x["id"][0] 
+                                            if len(x["id"]) > 0
+                                            else "")
+        for id_, component in course_out_sections.items():
+            course_out["sections"].append({"year":year,
+                                           "semester": term,
+                                           "id": id_,
+                                           "components": component})
+        out["courses"].append(course_out)
+    return out
+
 
