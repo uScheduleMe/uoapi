@@ -29,7 +29,8 @@ def _extract_codes(string, return_all = True):
     '''
     Returns course codes found in string; 
     if multiple codes are found and return_all is False, then returns an invalid code
-    Used in get_subjects.ipynb ''' codes = list({x.group(0) for x in re.finditer(pt.code_re, string)})
+    Used in get_subjects.ipynb ''' 
+    codes = list({x.group(0) for x in re.finditer(pt.code_re, string)})
     if return_all or len(codes) == 1:
         return codes
     return 'XXX 0000'
@@ -286,7 +287,7 @@ def update_form(old_form, new_form):
         old_form['ICAction'] = 'CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH'
 
 def _separate_requests_query():
-    r = requests.get(other_link)
+    r = requests.get(orig_link)
     new_form = get_hidden_inputs(r.text)
     update_form(old_form, new_form)
     r = requests.post(orig_link, data=old_form, headers=default_headers,
@@ -303,7 +304,7 @@ def format_query(year, term, subject, number):
 
 def run_query(query):
     with requests.Session() as s:
-        new_form = BeautifulSoup(s.get(other_link).text, 
+        new_form = BeautifulSoup(s.get(orig_link).text, 
                                  "html.parser").find_all("input", type="hidden")
         new_form = {x["id"]:x["value"] for x in new_form}
         query.update({x:y for x, y in new_form.items() if y.strip() != ''})
