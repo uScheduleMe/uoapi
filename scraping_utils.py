@@ -12,6 +12,7 @@ from course_info import Prereq
 
 #requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':DES-CBC3-SHA'
 #timetable_url = 'https://web30.uottawa.ca/v3/SITS/timetable/Search.aspx'
+
 # Course Info Parameters
 course_url = 'https://catalogue.uottawa.ca/en/courses/'
 

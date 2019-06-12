@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+from scraping_utils import *
 
 
 #############################################################################
