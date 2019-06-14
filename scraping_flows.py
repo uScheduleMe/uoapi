@@ -8,7 +8,6 @@ from scraping_utils import *
 #############################################################################
 
 
-#@TODO move to scraping_flows.py
 def get_course_tables(links):
     '''
     Returns a dictionary of pandas DataFrames of courses from each of the links provided in links
