@@ -166,18 +166,9 @@ def get_hidden_inputs(text):
     return BeautifulSoup(text, 'html.parser').find_all("input", type="hidden")
 
 def update_form(old_form, new_form):
-        old_form = old_form.copy()
         new_form = {x["id"]:x["value"] for x in new_form}
         old_form.update({x:y for x, y in new_form.items() if y.strip() != ''})
         old_form['ICAction'] = 'CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH'
-
-def _separate_requests_query():
-    r = requests.get(orig_link)
-    new_form = get_hidden_inputs(r.text)
-    update_form(old_form, new_form)
-    r = requests.post(orig_link, data=old_form, headers=default_headers,
-                      cookies=r.cookies)
-    return r
 
 def format_query(year, term, subject, number, query=old_form):
     query = query.copy()
@@ -188,12 +179,11 @@ def format_query(year, term, subject, number, query=old_form):
     return query
 
 def run_query(query):
+    query = query.copy()
     with requests.Session() as s:
-        new_form = BeautifulSoup(s.get(orig_link).text, 
-                                 "html.parser").find_all("input", type="hidden")
-        new_form = {x["id"]:x["value"] for x in new_form}
-        query.update({x:y for x, y in new_form.items() if y.strip() != ''})
-        query['ICAction'] = 'CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH'
+        #@TODO Error handling for failed requests
+        new_form = get_hidden_inputs(s.get(orig_link).text)
+        update_form(query, new_form)
         r = s.post(orig_link, data=query, 
                    headers={'Content-Type':"application/x-www-form-urlencoded"})
     return r.text
