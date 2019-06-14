@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import json
 import argparse
 from scraping_utils import format_query, run_query, extract_timetables
