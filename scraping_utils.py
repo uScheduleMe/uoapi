@@ -166,6 +166,7 @@ def get_hidden_inputs(text):
     return BeautifulSoup(text, 'html.parser').find_all("input", type="hidden")
 
 def update_form(old_form, new_form):
+        old_form = old_form.copy()
         new_form = {x["id"]:x["value"] for x in new_form}
         old_form.update({x:y for x, y in new_form.items() if y.strip() != ''})
         old_form['ICAction'] = 'CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH'
@@ -178,8 +179,8 @@ def _separate_requests_query():
                       cookies=r.cookies)
     return r
 
-def format_query(year, term, subject, number):
-    query = old_form
+def format_query(year, term, subject, number, query=old_form):
+    query = query.copy()
     term = term.lower()
     query["CLASS_SRCH_WRK2_STRM$35$"] = "2" + str(year)[-2:] + term_to_num[term]
     query["SSR_CLSRCH_WRK_SUBJECT$0"] = subject.lower()
