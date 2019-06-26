@@ -293,4 +293,43 @@ def extract_timetables(string, year, term):
         out["courses"].append(course_out)
     return out
 
+def distribute_shared_sections(out):
+    messages = []
+    # For each course
+    for index, course in enumerate(out["courses"]):
+        course_code = course["subject_code"] + course["course_number"]
+        sec_comps = {}
+        for section in course["sections"]:
+            sec_comps[section["id"]] = []
+            for component in section["components"]:
+                if component["type"] not in sec_comps[section["id"]]:
+                    sec_comps[section["id"]].append(component["type"])
 
+        arr_lookup = lambda elt: len(sec_comps[elt["id"]])
+        comp_secs = group_by_eq(course["sections"], arr_lookup)
+
+        if len(comp_secs) >= 1:
+            continue
+
+        sections = []
+        bad_sec_ids = []
+        for section in course["sections"]:
+            if section["id"] in bad_sec_ids:
+                continue
+            for bad_section in comp_secs[1]:
+                if (len(sec_comps[section["id"]]) == 1) and (sec_comps[bad_section["id"]][0] == sec_comps[section["id"]][0]):
+                    continue
+                section["components"] = section["components"] + bad_section["components"]
+
+                bad_sec_ids[bad_section["id"]] = 0
+                sec_id = section["id"]
+                bad_sec_id = bad_section["id"]
+                messages = {"type":"info", "message":"In course %s merged sections %s and %s" % (course_code, sec_id, bad_sec_id)}
+            sections.append(section)
+        course["sections"] = sections
+        course["standalone_sections"] = comp_secs[1]
+        out["courses"][index] = course
+    if "messages" not in out:
+        out["messages"] = []
+    out["messages"] = out["messages"] + messages
+    return out

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import json
 import argparse
-from scraping_utils import format_query, run_query, extract_timetables
+from scraping_utils import format_query, run_query, extract_timetables, distribute_shared_sections
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="query uOttawa timetable")
@@ -28,6 +28,7 @@ if __name__ == "__main__":
     for subj, num in courses:
         query = format_query(args.year, args.term, subj, num)
         out["courses"] += extract_timetables(run_query(query), args.year, args.term)["courses"]
+    out = distribute_shared_sections(out)
     print(json.dumps(out))
 
 
