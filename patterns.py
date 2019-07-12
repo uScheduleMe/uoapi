@@ -2,6 +2,7 @@ import regex as re
 
 # Reusable strings
 course_code_pattern = r"[A-Z]{3,4}\s*[0-9]{4,5}[A-Za-z]{0,1}"
+code_groups_pat = r"([A-Z]{3,4})\s*([0-9]{4,5}[A-Za-z]{0,1})"
 not_real_course_codes = r"(?P<ForU>.*[34]U.*)|(?:an )?equivalent|Permission of the School|Permission de l'(?:École|Institut)|Approval of the instructor|Permission du Département"
 faculties = r"(?:[Mm]athematics|[Mm]athématiques|[Ss]cience)"
 credit_count = r"(?P<credit_count>\d+ crédits de cours(?: en)?(?: %s)? \(?(?:[A-Z]{3}\)?(?: ou [A-Z]{3})* de niveau \d000(?: ou supérieur)*|universitaire)|\d+(?: course)? units (?:of|in)(?: %s)? \(?(?:[A-Z]{3}\)?(?: or [A-Z]{3})*(?: courses)? at(?: the| level)? \d000(?: level)?(?: or above)?|university-level courses?))" % (faculties, faculties)
@@ -10,6 +11,7 @@ parsable_codes = r"(?:\(*(?:%s)\)*(?:, |/| or | ou | and | et |%s)?)+" % (course
 
 #common patterns
 code_re = re.compile(course_code_pattern)
+code_groups = re.compile(code_groups_pat)
 credit_re = re.compile(r"\([0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})\)|[0-9]{1,} (unit[s]{0,1}|crédit[s]{0,1})")
 subj_re = re.compile(r"\([A-Z]{3}\)")
 href_re = re.compile("[/]{0,1}en/courses/[A-Za-z]{1,}[/]{0,1}")
