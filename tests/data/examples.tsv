@@ -2,6 +2,7 @@
 #year	term	subject	code	check/ignore	explanation
 #The check/ignore field tells the tester whether to verify that the messages are the same
 #The fields must be tab-separated
-2020	winter	mat	4995	ignore	Test: extract_section basics; "topic" field
+2020	winter	mat	4995	ignore	Test: extract_section basics; "description" field
 2019	fall	phy	1321	check	Test: distributing section; instructors not multiple of days; different statuses
 2020	winter	csi	3140	check	Test: bad date and time data
+2020	winter	mat	4	ignore	Test: extracting multiple courses; multiple "description" fields
