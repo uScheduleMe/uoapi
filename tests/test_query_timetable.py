@@ -143,7 +143,7 @@ class TestTimetableQuery(unittest.TestCase):
                 self.tq.normalize_args, qt.ErrorMessenger(),
                 2020, 2, "mat", 3121
             )
-        #@TODO Add test for valid (year, term) not query-able
+        # Test for valid (year, term) not available in test_call
         with self.subTest("code"):
             self.assertRaisesRegex(
                 ValueError, "not a valid query",
@@ -151,24 +151,55 @@ class TestTimetableQuery(unittest.TestCase):
                 2020, "winter", 189, 3121
             )
         # Test success
-        with self.subTest("success"):
+        with self.subTest("course"):
             self.assertEqual(
                 self.tq.normalize_args(qt.ErrorMessenger(), 2020, "winter", "mat", 3121),
-                ("2201", "mat", "3121", "course")
+                ("2201", "course", "MAT", "3121")
+            )
+        with self.subTest("subject:year"):
+            self.assertEqual(
+                self.tq.normalize_args(qt.ErrorMessenger(), 2020, "winter", "mat", 4),
+                ("2201", "subject:year", "MAT", "4")
             )
 
     def test_format_form(self):
         # Test "course" search
         with self.subTest("\"course\" search"):
             self.tq.format_form(qt.ErrorMessenger(), 2020, "winter", "mat", 3121)
+            # Check if desired keys are set
             for key, val in (
                 ("CLASS_SRCH_WRK2_STRM$35$", "2201"),
-                ("SSR_CLSRCH_WRK_SUBJECT$0", "mat"),
+                ("SSR_CLSRCH_WRK_SUBJECT$0", "MAT"),
                 ("SSR_CLSRCH_WRK_CATALOG_NBR$0", "3121"),
             ):
                 self.assertEqual(self.tq.form[key], val)
-            #@TODO check if other keys are not set
-        #@TODO Add tests for other search patterns
+            # Check if other keys are not set
+            for i in "1234":
+                self.assertEqual(self.tq.form[
+                    "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$chk$0".format(i)
+                ], "N")
+                self.assertNotIn(
+                    "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$0".format(i),
+                    self.tq.form,
+                )
+        with self.subTest("\"subject:year\" search"):
+            self.tq.format_form(qt.ErrorMessenger(), 2020, "winter", "mat", 4)
+            # Check if desired keys are set
+            self.assertEqual(self.tq.form[
+                "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_04$chk$0"
+            ], "Y")
+            self.assertEqual(self.tq.form[
+                "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_04$0"
+            ], "Y")
+            # Check if other keys are not set
+            for i in "123":
+                self.assertEqual(self.tq.form[
+                    "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$chk$0".format(i)
+                ], "N")
+                self.assertNotIn(
+                    "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$0".format(i),
+                    self.tq.form,
+                )
 
     def test_call(self):
         with self.subTest("bad input"):
@@ -180,6 +211,7 @@ class TestTimetableQuery(unittest.TestCase):
             self.assertIn({
                 "type": "error",
                 "message": "Year not valid",
+                "exc_info": True,
             }, messages)
         with self.subTest("bad status code"):
             self.mock_server.status_code = 200

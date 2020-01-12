@@ -13,9 +13,6 @@ from bs4 import BeautifulSoup
 import regex as re
 
 import patterns as pt
-from scraping_utils import (format_query, run_query, extract_timetables, 
-                            distribute_shared_sections)
-# needs search_tag
 
 
 logging.getLogger(__name__)
@@ -55,6 +52,8 @@ class ErrorMessenger:
         if msg_list is None:
             msg_list = []
         self.msg_list = msg_list
+        if log and not isinstance(log, Callable):
+            log = logging.log
         self.log = log
         self.raise_ = raise_
 
@@ -69,9 +68,9 @@ class ErrorMessenger:
         err_type = err_type.strip().upper()
         err_no = getattr(logging, err_type, 10)
         if self.log:
-            logging.log(err_no, message, **kwargs)
+            self.log(err_no, message, **kwargs)
         if self.raise_:
-            raise self.raise_("%s :: %s" % (err_type, message))
+            raise self.raise_((err_type, message), kwargs)
 
 def make_request(
     method: Callable,
@@ -238,16 +237,18 @@ class TimetableQuery:
         semester = "2" + year[-2:] + term
         if semester not in self.available:
             em("warning", "Semester may not be available")
-        subject = str(subject).strip().lower() 
+        subject = str(subject).strip().upper()
         number = str(number).strip().upper() 
         if pt.code_re.search((subject + number).upper()) is not None:
             search = "course"
+        elif re.search("[A-Z]{3}", subject) and number in "12345":
+            search = "subject:year"
         #@TODO Add more search formats
         #elif ...:
         #    pass
         else:
             raise ValueError("Subject and number not a valid query")
-        return semester, subject, number, search
+        return semester, search, subject, number
 
     def format_form(self,
         em: ErrorMessenger,
@@ -257,14 +258,34 @@ class TimetableQuery:
         number: Union[int, str, bytes],
     ) -> dict:
         # Format inputs
-        semester, subject, number, search = self.normalize_args(em,
+        semester, search, subject, number = self.normalize_args(em,
             year, term, subject, number
         )
+        # Clearing form
+        for i in set("12345"):
+            self.form[
+                "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$chk$0".format(i)
+            ] = "N"
+            self.form.pop(
+                "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$0".format(i),
+                True,
+            )
+        self.form.pop("SSR_CLSRCH_WRK_CATALOG_NBR$0", True)
         # Update form and return
+        self.form["CLASS_SRCH_WRK2_STRM$35$"] = semester
+        self.form["SSR_CLSRCH_WRK_SUBJECT$0"] = subject
         if "course" == search:
-            self.form["CLASS_SRCH_WRK2_STRM$35$"] = semester
-            self.form["SSR_CLSRCH_WRK_SUBJECT$0"] = subject
             self.form["SSR_CLSRCH_WRK_CATALOG_NBR$0"] = number
+        elif "subject:year" == search:
+            if "5" == number:
+                raise NotImplementedError()
+            else:
+                self.form[
+                    "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$chk$0".format(number)
+                ] = "Y"
+                self.form[
+                    "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$0".format(number)
+                ] = "Y"
         #@TODO Add more search formats
         #elif ...:
         #    pass
@@ -307,7 +328,8 @@ class TimetableQuery:
         except Exception as e:
             em("error", 
                 e.args[0] if len(e.args) > 0 
-                else "Unknown {} in format_form".format(type(e))
+                else "Unknown {} in format_form".format(type(e)),
+                exc_info=True
             )
             success = False
         else:
@@ -375,9 +397,10 @@ course_tag_is_title = lambda x: search_tag(
                       )
 course_tag_is_section = lambda x: search_tag(
                             x, 
-                            "tr", 
+                            "div", 
                             "id", 
-                            "trSSR_CLSRCH_MTG"
+                            "win0divSSR_CLSRSLT_WRK_GROUPBOX",
+                            lambda x, y: y.startswith(x)
                         )
 section_tag_is_classname = lambda x: search_tag(
                                 x, 
@@ -388,7 +411,7 @@ section_tag_is_classname = lambda x: search_tag(
 
 # Scraping
 
-def extract_section(section, log=False):
+def extract_section(section, descr, log=False):
     em = ErrorMessenger(log=log)
     section_name = section(section_tag_is_classname)[0].contents
     sec_id, sec_type = section_name[0].strip().upper(), section_name[-1].strip()
@@ -409,6 +432,7 @@ def extract_section(section, log=False):
         "type": type_,
         "session_type": sec_type.strip(),
         "status": status,
+        "description": descr,
     }
     # Extract individual components
     rooms = [x.strip() for x in section(lambda x:  
@@ -487,21 +511,32 @@ def extract_course(course, year, term, log=False):
         title,
     ).group().split()
     title = pt.code_re.sub("", title).strip().strip("-").strip()
-    descr = course(lambda x:
-        search_tag(
-            x, "div", "id", "win0divDERIVED_CLSRCH_DESCRLONG"
-        )
-    )
     course_out = {
         "subject_code": subject_code,
         "course_number": course_number,
         "course_name": title,
-        "topic": descr[0].text.strip() if len(descr) > 0 else "",
         "sections": [],
         "messages": [],
     }
     for section in course(course_tag_is_section):
-        sections, messages = extract_section(section, log)
+        subsection = section.find(lambda x: search_tag(
+            x,
+            "tr",
+            "id",
+            "trSSR_CLSRCH_MTG",
+        ))
+        if subsection is None:
+            continue
+        descr = section.find(lambda x:
+            search_tag(
+                x, "div", "id", "win0divDERIVED_CLSRCH_DESCRLONG"
+            )
+        )
+        sections, messages = extract_section(
+            section,
+            descr.text.strip() if descr is not None else "",
+            log,
+        )
         course_out["sections"] += sections
         course_out["messages"] += messages
     course_out["sections"] = group_by_eq(
