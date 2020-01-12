@@ -1,0 +1,525 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<PAGE id='UO_PUB_CLSSRCH_RES'><GENSCRIPT id='script'><![CDATA[var oWin=window;
+ var oDoc = window.document;
+oWin.strCurrUrl='https://uocampus.public.uottawa.ca/psc/csprpr9pub/EMPLOYEE/SA/c/UO_SR_AA_MODS.UO_PUB_CLSSRCH.GBL?&PAGE=UO_PUB_CLSSRCH_RES';
+oWin.strReqURL='';
+]]></GENSCRIPT><GENSCRIPT id='script'><![CDATA[oWin.gridRowSelRgbColor_win0 ='rgb(212,219,217)';
+]]></GENSCRIPT><GENSCRIPT id='onloadScript'><![CDATA[var pt_pageinfo = document.getElementById('pt_pageinfo_win0');
+if (pt_pageinfo) {
+pt_pageinfo.setAttribute('Page', 'UO_PUB_CLSSRCH_RES');
+pt_pageinfo.setAttribute('Component', 'UO_PUB_CLSSRCH');
+pt_pageinfo.setAttribute('Menu', 'UO_SR_AA_MODS');
+pt_pageinfo.setAttribute('Mode', 'CLASSIC');
+}
+g_bAccessibilityMode=false;
+var actn='';
+var oWin=window;
+var oDoc=document;
+actn=oDoc.win0.ICAction.value;
+oDoc.win0.ICAction.value='None';
+oDoc.win0.ICResubmit.value='0';
+oWin.nResubmit='0';
+oDoc.win0.ICStateNum.value=2;initVars_win0();
+if (typeof resetVars_win0 == "function")resetVars_win0();
+oDoc.win0.ICFocus.value='';
+setupTimeout2();
+if (oDoc.win0.ICTypeAheadID) oDoc.win0.ICTypeAheadID.value='';
+if (!isCrossDomainTop()) top.document.title=document.title;
+ptEvent.add(window,'scroll',positionWAIT_win0);
+ptCommonObj2.generateABNSearchResults(document.win0);
+getGblSrchPageNum(actn);
+if (gSrchRsltPageNum <= 5) getAllRelatedActions();
+
+if (typeof(myAppsWindowOpenJS) != 'undefined' && myAppsWindowOpenJS != null && myAppsWindowOpenJS != '')
+ {
+try {eval(myAppsWindowOpenJS);} catch(e) {}
+  myAppsWindowOpenJS=null;
+}
+if (typeof(ptLongEditCounter) != 'undefined' && ptLongEditCounter != null)
+   ptLongEditCounter.onLoadLongEditCounter();
+if (typeof(HelppopupObj_win0) != 'undefined' && HelppopupObj_win0 != null)
+ HelppopupObj_win0.StopPopup('win0');ResetGlyph_win0();
+self.scroll(0,0);
+if (typeof ptGridObj_win0 != 'undefined' && ptGridObj_win0)
+ ptGridObj_win0.clearGridArr();
+objToBeFocus = null;
+if (typeof oWin == 'undefined') setEventHandlers_win0('ICFirstAnchor_win0', 'ICLastAnchor_win0', false);
+ else
+ oWin.setEventHandlers_win0('ICFirstAnchor_win0', 'ICLastAnchor_win0', false);
+setFocus_win0('DERIVED_CLSRCH_SSR_CLSRCH_CRIT',-1);
+ptLoadingStatus_empty(0);
+setupTimeout2();
+processing_win0(0,3000);]]></GENSCRIPT>
+<FIELD id='win0divPSHIDDENFIELDS'><![CDATA[<input type='hidden' name='ICType' id='ICType' value='Panel' />
+<input type='hidden' name='ICElementNum' id='ICElementNum' value='0' />
+<input type='hidden' name='ICStateNum' id='ICStateNum' value='2' />
+<input type='hidden' name='ICAction' id='ICAction' value='None' />
+<input type='hidden' name='ICModelCancel' id='ICModelCancel' value='0' />
+<input type='hidden' name='ICXPos' id='ICXPos' value='0' />
+<input type='hidden' name='ICYPos' id='ICYPos' value='0' />
+<input type='hidden' name='ResponsetoDiffFrame' id='ResponsetoDiffFrame' value='-1' />
+<input type='hidden' name='TargetFrameName' id='TargetFrameName' value='None' />
+<input type='hidden' name='FacetPath' id='FacetPath' value='None' />
+<input type='hidden' name='ICFocus' id='ICFocus' value='' />
+<input type='hidden' name='ICSaveWarningFilter' id='ICSaveWarningFilter' value='0' />
+<input type='hidden' name='ICChanged' id='ICChanged' value='-1' />
+<input type='hidden' name='ICSkipPending' id='ICSkipPending' value='0' />
+<input type='hidden' name='ICAutoSave' id='ICAutoSave' value='0' />
+<input type='hidden' name='ICResubmit' id='ICResubmit' value='0' />
+<input type='hidden' name='ICSID' id='ICSID' value='3qpGXx4aZsc7+B4PzoK0NU+jlKiAbSWo3qQSDoGyA9Q=' />
+<input type='hidden' name='ICActionPrompt' id='ICActionPrompt' value='false' />
+<input type='hidden' name='ICTypeAheadID' id='ICTypeAheadID' value='' />
+<input type='hidden' name='ICBcDomData' id='ICBcDomData' value='' />
+<input type='hidden' name='ICPanelName' id='ICPanelName' value='' />
+<input type='hidden' name='ICFind' id='ICFind' value='' />
+<input type='hidden' name='ICAddCount' id='ICAddCount' value='' />
+<input type='hidden' name='ICAppClsData' id='ICAppClsData' value='' />
+]]></FIELD>
+<FIELD id='win0divPAGEBAR'><![CDATA[<DIV><table cols='3' width='100%' cellpadding='0' cellspacing='0' hspace='0' vspace='0'>
+<tr>
+<td width='80%'></td><td width='10%' nowrap='nowrap' align='right'><label for='#ICDataLang'><span class='PSDROPDOWNLABEL' >Data Language:&nbsp;&nbsp;</span><select name='#ICDataLang' id='#ICDataLang' tabindex='1' class='PSMULTILANG'  PSaccesskey='9' onchange="addchg_win0(this);submitAction_win0(this.form,this.id);">
+<option value="CFR">Canadian French</option>
+<option value="ENG" selected='selected'>English</option>
+</select></label></td>
+<td width='10%' nowrap='nowrap' align='right'></td></tr>
+</table>
+</DIV>]]></FIELD><GENSCRIPT id='onloadScript'><![CDATA[if (typeof window.top.ptrc != "undefined" && window.top.ptrc != null){window.top.ptrc.SetRcEnabled(false);window.top.ptrc.initRC();}]]></GENSCRIPT>
+<FIELD id='win0divPSPANELTABS'><![CDATA[]]></FIELD>
+<FIELD id='win0divPAGECONTAINER'><![CDATA[<table class='PSPAGECONTAINER' role='main' aria-labelledby='app_label'><tr><td>
+<DIV class='ps_pspagecontainer' id='win0divPSPAGECONTAINER'><table role='presentation'  border='0' id='ACE_width' cellpadding='0' cellspacing='0' class='PSPAGECONTAINER' cols='13' width='807'>
+<tr>
+<td width='0' height='7'></td>
+<td width='4'></td>
+<td width='8'></td>
+<td width='1'></td>
+<td width='4'></td>
+<td width='219'></td>
+<td width='168'></td>
+<td width='156'></td>
+<td width='12'></td>
+<td width='8'></td>
+<td width='4'></td>
+<td width='195'></td>
+<td width='28'></td>
+</tr>
+<tr>
+<td height='48'></td>
+<td colspan='7'  valign='top' align='left'>
+<DIV    id='win0divDERIVED_CLSRCH_GROUPBOX2'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='559'>
+<tr><td class='PAGROUPBOXLABELINVISIBLE'  align='left'>Groupbox</td></tr>
+<tr><td width='557'>
+<table role='presentation'  border='0' id='ACE_DERIVED_CLSRCH_GROUPBOX2' cellpadding='0' cellspacing='0' cols='3' width='557' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='13' height='0'></td>
+<td width='311'></td>
+<td width='233'></td>
+</tr>
+<tr>
+<td height='18'></td>
+<td colspan='2'  valign='top' align='left'>
+<DIV    id='win0divDERIVED_CLSRCH_SS_TRANSACT_TITLE'><span   role='heading' aria-level='1'  class='PATRANSACTIONTITLE' id='DERIVED_CLSRCH_SS_TRANSACT_TITLE'>Search for Classes</span>
+</DIV></td>
+</tr>
+<tr>
+<td height='5'></td>
+<td rowspan='2'  valign='top' align='left'>
+<DIV  id='win0divDERIVED_CLSRCH_SSR_CLASS_LBLlbl'><span  class='PAPAGETITLE' >Search Results</span></DIV></td>
+</tr>
+<tr>
+<td height='13'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0divDERIVED_CLSRCH_SSR_CLASS_LBL'><span    class='PSEDITBOX_DISPONLY' id='DERIVED_CLSRCH_SSR_CLASS_LBL'>&nbsp;</span>
+</DIV></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+<tr>
+<td height='9' colspan='13'></td>
+</tr>
+<tr>
+<td height='29' colspan='4'></td>
+<td colspan='8'  valign='top' align='left'>
+<DIV    id='win0divDERIVED_CLSRCH_SSR_MSG_TEXT'><span    class='PAPAGEINSTRUCTIONS' style='word-wrap:break-word;overflow:hidden;display:block; width:584px;  overflow:auto;' id='DERIVED_CLSRCH_SSR_MSG_TEXT'>&nbsp;</span>
+</DIV></td>
+</tr>
+<tr>
+<td height='14' colspan='5'></td>
+<td colspan='7'  valign='top' align='left'>
+<DIV    id='win0divDERIVED_CLSRCH_SSS_PAGE_KEYDESCR'><span    class='SSSKEYTEXT' id='DERIVED_CLSRCH_SSS_PAGE_KEYDESCR'>University of Ottawa | 2020 Winter Term</span>
+</DIV></td>
+</tr>
+<tr>
+<td height='44' colspan='3'></td>
+<td colspan='7'  valign='top' align='left'>
+<DIV    id='win0div$ICField94'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='567'>
+<tr><td width='565'>
+<table role='presentation'  border='0' id='ACE_$ICField94' cellpadding='0' cellspacing='0' cols='3' width='565' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='3' height='4'></td>
+<td width='552'></td>
+<td width='10'></td>
+</tr>
+<tr>
+<td height='38'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0divDERIVED_CLSRCH_SSR_CLSRCH_CRIT'><div style="width:552px; " >
+<!-- Begin HTML Area Name Undisclosed -->
+<table class="SSSTEXTBLUE"><tr><td>The following classes match your search criteria Course Subject: <strong>Mathematics</strong>,&nbsp;&nbsp;Course Number is exactly '<strong>3121</strong>',&nbsp;&nbsp;Show Open Classes Only: <strong>Yes</strong><strong></strong></td></tr></table>
+<!-- End HTML Area -->
+</div>
+</DIV></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+<tr>
+<td height='4' colspan='13'></td>
+</tr>
+<tr>
+<td height='36' colspan='2'></td>
+<td colspan='11'  valign='top' align='left'>
+<DIV    id='win0divDERIVED_REGFRM1_DESCR1'><table cellpadding='2' cellspacing='0' cols='1'  class='PSGROUPBOXWBO'  width='803'>
+<tr><td class='PAGROUPBOXLABELINVISIBLE'  align='left'>Descr</td></tr>
+<tr><td width='801'>
+<table role='presentation'  border='0' id='ACE_DERIVED_REGFRM1_DESCR1' cellpadding='0' cellspacing='0' cols='3' width='801' class='PSGROUPBOX' style='border-style:none' >
+<tr>
+<td width='451' height='0'></td>
+<td width='282'></td>
+<td width='68'></td>
+</tr>
+<tr>
+<td height='19'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0divDERIVED_REGFRM1_SSR_WAIT_LIST_OFF'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='281'>
+<tr><td width='279'>
+<table role='presentation'  border='0' id='ACE_DERIVED_REGFRM1_SSR_WAIT_LIST_OFF' cellpadding='0' cellspacing='0' cols='9' width='279' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='39' height='0'></td>
+<td width='18'></td>
+<td width='2'></td>
+<td width='44'></td>
+<td width='48'></td>
+<td width='18'></td>
+<td width='2'></td>
+<td width='52'></td>
+<td width='56'></td>
+</tr>
+<tr>
+<td height='15'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0div$ICField13'><img src=/cs/csprpr9pub/cache/PS_CS_STATUS_OPEN_ICN_1.gif width='16' height='16' alt='Open' title='Open' class='PSSTATICIMAGE' />
+</DIV></td>
+<td></td>
+<td  valign='top' align='left'>
+<DIV    id='win0div$ICField10'><span    class='SSSKEYTEXT' >Open</span>
+</DIV></td>
+<td></td>
+<td  valign='top' align='left'>
+<DIV    id='win0div$ICField14'><img src=/cs/csprpr9pub/cache/PS_CS_STATUS_CLOSED_ICN_1.gif width='16' height='16' alt='Closed' title='Closed' class='PSSTATICIMAGE' />
+</DIV></td>
+<td></td>
+<td  valign='top' align='left'>
+<DIV    id='win0div$ICField11'><span    class='PSTEXT' >Closed</span>
+</DIV></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+<tr>
+<td height='7' colspan='3'></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+<tr>
+<td height='4' colspan='13'></td>
+</tr>
+<tr>
+<td height='42'></td>
+<td colspan='10'  valign='top' align='left'>
+<DIV    id='win0divDERIVED_CLSRCH_GROUP5'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='583'>
+<tr><td width='581'>
+<table role='presentation'  border='0' id='ACE_DERIVED_CLSRCH_GROUP5' cellpadding='0' cellspacing='0' cols='4' width='581' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='235' height='0'></td>
+<td width='168'></td>
+<td width='168'></td>
+<td width='10'></td>
+</tr>
+<tr>
+<td height='28'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0div$ICField$3$'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='167'>
+<tr><td width='165'>
+<table role='presentation'  border='0' id='ACE_$ICField$3$' cellpadding='0' cellspacing='0' cols='2' width='165' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='3' height='0'></td>
+<td width='162'></td>
+</tr>
+<tr>
+<td height='23'></td>
+<td nowrap='nowrap'  valign='top' align='left'>
+<DIV    id='win0divCLASS_SRCH_WRK2_SSR_PB_NEW_SEARCH'><a role='presentation' class='PSPUSHBUTTON Left' ><span style='background-Color: transparent;'><input type='button' name='CLASS_SRCH_WRK2_SSR_PB_NEW_SEARCH' id='CLASS_SRCH_WRK2_SSR_PB_NEW_SEARCH' tabindex='20' value='New Search'  class='PSPUSHBUTTON' style='width:152px; ' onclick="submitAction_win0(document.win0,this.id,event);" title='Start a New Search'  /></span></a>
+</DIV></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+<td  valign='top' align='left'>
+<DIV    id='win0div$ICField$5$'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='167'>
+<tr><td width='165'>
+<table role='presentation'  border='0' id='ACE_$ICField$5$' cellpadding='0' cellspacing='0' cols='2' width='165' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='7' height='0'></td>
+<td width='158'></td>
+</tr>
+<tr>
+<td height='23'></td>
+<td nowrap='nowrap'  valign='top' align='left'>
+<DIV    id='win0divCLASS_SRCH_WRK2_SSR_PB_MODIFY'><a role='presentation' class='PSPUSHBUTTON Left' ><span style='background-Color: transparent;'><input type='button' name='CLASS_SRCH_WRK2_SSR_PB_MODIFY' id='CLASS_SRCH_WRK2_SSR_PB_MODIFY' tabindex='21' value='Modify Search'  class='PSPUSHBUTTON' style='width:152px; ' onclick="submitAction_win0(document.win0,this.id,event);" /></span></a>
+</DIV></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+<tr>
+<td height='9' colspan='4'></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+<tr>
+<td height='98'></td>
+<td colspan='10'  valign='top' align='left'>
+<DIV    id='win0divDERIVED_CLSRCH_GROUP6'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='583'>
+<tr><td width='581'>
+<table role='presentation'  border='0' id='ACE_DERIVED_CLSRCH_GROUP6' cellpadding='0' cellspacing='0' cols='2' width='581' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='3' height='0'></td>
+<td width='578'></td>
+</tr>
+<tr>
+<td height='84'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0divSSR_CLSRSLT_WRK_GROUPBOX1'><table cellpadding='2' cellspacing='0' cols='1'  class='PSGROUPBOXWBO'  width='687'>
+<tr><td class='PSGROUPBOXLABEL'  align='left'>1 class section(s) found</td></tr>
+<tr><td width='685'>
+<table role='presentation'  border='0' id='ACE_SSR_CLSRSLT_WRK_GROUPBOX1' cellpadding='0' cellspacing='0' cols='3' width='685' class='PSGROUPBOX' style='border-style:none' >
+<tr>
+<td width='0' height='0'></td>
+<td width='684'></td>
+<td width='2'></td>
+</tr>
+<tr>
+<td height='66'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0div$ICField$4$$0'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  id='$ICField$4$$scroll$0' onclick="getScrollTableId('$ICField$4$$scroll$0')" width='683'>
+<tr><td width='681'>
+<table role='presentation'  border='0' id='ACE_$ICField$4$$0' cellpadding='0' cellspacing='0' cols='3' width='681' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='0' height='0'></td>
+<td width='680'></td>
+<td width='2'></td>
+</tr>
+<tr>
+<td height='67'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0divSSR_CLSRSLT_WRK_GROUPBOX2$0'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='679'>
+<tr><td class='PAGROUPBOXLABELLEVEL1'  align='left'><DIV    id='win0divSSR_CLSRSLT_WRK_GROUPBOX2GP$0'><a class='PSHYPERLINK PTCOLLAPSE_ARROW' title='Collapse section MAT 3121 - Complex Analysis I' name='SSR_CLSRSLT_WRK_GROUPBOX2$0' id='SSR_CLSRSLT_WRK_GROUPBOX2$0' tabindex='36' href="javascript:submitAction_win0(document.win0,'SSR_CLSRSLT_WRK_GROUPBOX2$0');" aria-expanded='true'><img src='/cs/csprpr9pub/cache/PT_TRANS_PIX_1.png' alt='Collapse section MAT 3121 - Complex Analysis I' class='PTCOLLAPSE' title='Collapse section' border='0' /></a>&nbsp;MAT 3121 - Complex Analysis I&nbsp;</DIV></td></tr>
+<tr><td width='677'>
+<table role='presentation'  border='0' id='ACE_SSR_CLSRSLT_WRK_GROUPBOX2$0' cellpadding='0' cellspacing='0' cols='3' width='677' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='0' height='0'></td>
+<td width='676'></td>
+<td width='2'></td>
+</tr>
+<tr>
+<td height='52'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0div$ICField48$0'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  id='$ICField48$scroll$0' onclick="getScrollTableId('$ICField48$scroll$0')" width='675'>
+<tr><td width='673'>
+<table role='presentation'  border='0' id='ACE_$ICField48$0' cellpadding='0' cellspacing='0' cols='3' width='673' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='0' height='3'></td>
+<td width='672'></td>
+<td width='2'></td>
+</tr>
+<tr>
+<td height='47'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0divSSR_CLSRSLT_WRK_GROUPBOX3$0'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='671'>
+<tr><td width='669'>
+<table role='presentation'  border='0' id='ACE_SSR_CLSRSLT_WRK_GROUPBOX3$0' cellpadding='0' cellspacing='0' cols='3' width='669' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='0' height='0'></td>
+<td width='668'></td>
+<td width='2'></td>
+</tr>
+<tr>
+<td height='39'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0divSSR_CLSRCH_MTG1$0'>
+<table cellspacing='0' class='PSLEVEL1GRIDNBONBO'  id='SSR_CLSRCH_MTG1$scroll$0' dir='ltr' cols='7' width='668' cellpadding='2'>
+<tr>
+<th scope='col' width='30' align='left' class='PSLEVEL1GRIDCOLUMNHDR' >&nbsp;</th>
+<th scope='col' abbr='Section' width='80' align='left' class='PSLEVEL1GRIDCOLUMNHDR' ><a name='SSR_CLSRCH_MTG1$srt6$0' id='SSR_CLSRCH_MTG1$srt6$0' tabindex='71' class='PSLEVEL1GRIDCOLUMNHDR' href="javascript:submitAction_win0(document.win0,'SSR_CLSRCH_MTG1$srt6$0');" title="Click to sort ascending">Section</a></th>
+<th scope='col' abbr='Days &amp; Times' width='98' align='left' class='PSLEVEL1GRIDCOLUMNHDR' ><a name='SSR_CLSRCH_MTG1$srt7$0' id='SSR_CLSRCH_MTG1$srt7$0' tabindex='72' class='PSLEVEL1GRIDCOLUMNHDR' href="javascript:submitAction_win0(document.win0,'SSR_CLSRCH_MTG1$srt7$0');" title="Click to sort ascending">Days &amp; Times</a></th>
+<th scope='col' abbr='Room' width='91' align='left' class='PSLEVEL1GRIDCOLUMNHDR' ><a name='SSR_CLSRCH_MTG1$srt8$0' id='SSR_CLSRCH_MTG1$srt8$0' tabindex='73' class='PSLEVEL1GRIDCOLUMNHDR' href="javascript:submitAction_win0(document.win0,'SSR_CLSRCH_MTG1$srt8$0');" title="Click to sort ascending">Room</a></th>
+<th scope='col' abbr='Instructor' width='98' align='left' class='PSLEVEL1GRIDCOLUMNHDR' ><a name='SSR_CLSRCH_MTG1$srt9$0' id='SSR_CLSRCH_MTG1$srt9$0' tabindex='74' class='PSLEVEL1GRIDCOLUMNHDR' href="javascript:submitAction_win0(document.win0,'SSR_CLSRCH_MTG1$srt9$0');" title="Click to sort ascending">Instructor</a></th>
+<th scope='col' abbr='Meeting Dates' width='94' align='left' class='PSLEVEL1GRIDCOLUMNHDR' ><a name='SSR_CLSRCH_MTG1$srt10$0' id='SSR_CLSRCH_MTG1$srt10$0' tabindex='75' class='PSLEVEL1GRIDCOLUMNHDR' href="javascript:submitAction_win0(document.win0,'SSR_CLSRCH_MTG1$srt10$0');" title="Click to sort ascending">Meeting Dates</a></th>
+<th scope='col' abbr='Status' width='41' align='left' class='PSLEVEL1GRIDCOLUMNHDR' ><a name='SSR_CLSRCH_MTG1$srt11$0' id='SSR_CLSRCH_MTG1$srt11$0' tabindex='76' class='PSLEVEL1GRIDCOLUMNHDR' href="javascript:submitAction_win0(document.win0,'SSR_CLSRCH_MTG1$srt11$0');" title="Click to sort ascending">Status</a></th>
+</tr>
+<tr id='trSSR_CLSRCH_MTG1$0_row1' valign='center' onClick="HighLightTR('rgb(212,219,217)','','trSSR_CLSRCH_MTG1$0_row1');" onMouseOver="hoverLightTR('rgb(249,254,203)','',0,'trSSR_CLSRCH_MTG1$0_row1');" onmouseout="hoverLightTR('rgb(249,254,203)','',1,'trSSR_CLSRCH_MTG1$0_row1');">
+<td align='left'  height='20' class='PSLEVEL3GRIDODDROW' >
+<DIV    id='win0divMTG_CLASS_NBR$0'><span id='MTG_CLASS_NBR$span$0'  class='PSHYPERLINK'  title=' ' ><a name='MTG_CLASS_NBR$0' id='MTG_CLASS_NBR$0'  ptlinktgt='pt_peoplecode' tabindex='78' onclick='javascript:cancelBubble(event);'href="javascript:submitAction_win0(document.win0,'MTG_CLASS_NBR$0');"  class='PSHYPERLINK' >Details</a></span>
+</DIV></td>
+<td class='PSLEVEL3GRIDODDROW'  align='left'  class='PSLEVEL3GRIDODDROW' >
+<DIV    id='win0divMTG_CLASSNAME$0'><span id='MTG_CLASSNAME$span$0'  class='PSHYPERLINK'  title=' ' ><a name='MTG_CLASSNAME$0' id='MTG_CLASSNAME$0'  ptlinktgt='pt_peoplecode' tabindex='79' onclick='javascript:cancelBubble(event);'href="javascript:submitAction_win0(document.win0,'MTG_CLASSNAME$0');"  class='PSHYPERLINK' >A00-LEC<br />FullSess.</a></span>
+</DIV></td>
+<td class='PSLEVEL3GRIDODDROW'  align='left'  class='PSLEVEL3GRIDODDROW' >
+<DIV    id='win0divMTG_DAYTIME$0'><span    class='PSLONGEDITBOX' id='MTG_DAYTIME$0'>We 10:00 - 11:20<br />Fr 08:30 - 09:50</span>
+</DIV></td>
+<td class='PSLEVEL3GRIDODDROW'  align='left'  class='PSLEVEL3GRIDODDROW' >
+<DIV    id='win0divMTG_ROOM$0'><span    class='PSLONGEDITBOX' id='MTG_ROOM$0'>65 University (MRT) 251<br />65 University (MRT) 251</span>
+</DIV></td>
+<td class='PSLEVEL3GRIDODDROW'  align='left'  class='PSLEVEL3GRIDODDROW' >
+<DIV    id='win0divMTG_INSTR$0'><span    class='PSLONGEDITBOX' id='MTG_INSTR$0'>Thierry Giordano<br />Thierry Giordano</span>
+</DIV></td>
+<td class='PSLEVEL3GRIDODDROW'  align='left'  class='PSLEVEL3GRIDODDROW' >
+<DIV    id='win0divMTG_TOPIC$0'><span    class='PSLONGEDITBOX' id='MTG_TOPIC$0'>2020-01-06 - 2020-04-04<br />2020-01-06 - 2020-04-04</span>
+</DIV></td>
+<td class='PSLEVEL3GRIDODDROW'  align='left'  class='PSLEVEL3GRIDODDROW' >
+<DIV    id='win0divDERIVED_CLSRCH_SSR_STATUS_LONG$0'><div style="min-width:41px; " >
+<!-- Begin HTML Area Name Undisclosed -->
+<img src="/cs/csprpr9pub/cache/PS_CS_STATUS_OPEN_ICN_1.gif" width="16" height="16" alt="Open" STYLE="vertical-align:middle;text-align:center;margin-left:12px">
+<!-- End HTML Area -->
+</div>
+</DIV></td>
+</tr>
+</table>
+</DIV>
+</td>
+</tr>
+<tr>
+<td height='3' colspan='3'></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+<tr>
+<td height='3' colspan='3'></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+<tr>
+<td height='9' colspan='2'></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+<tr>
+<td height='8' colspan='13'></td>
+</tr>
+<tr>
+<td height='28' colspan='6'></td>
+<td  valign='top' align='left'>
+<DIV    id='win0div$ICField$6$'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='167'>
+<tr><td width='165'>
+<table role='presentation'  border='0' id='ACE_$ICField$6$' cellpadding='0' cellspacing='0' cols='2' width='165' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='3' height='0'></td>
+<td width='162'></td>
+</tr>
+<tr>
+<td height='23'></td>
+<td nowrap='nowrap'  valign='top' align='left'>
+<DIV    id='win0divCLASS_SRCH_WRK2_SSR_PB_NEW_SEARCH$3$'><a role='presentation' class='PSPUSHBUTTON Left' ><span style='background-Color: transparent;'><input type='button' name='CLASS_SRCH_WRK2_SSR_PB_NEW_SEARCH$3$' id='CLASS_SRCH_WRK2_SSR_PB_NEW_SEARCH$3$' tabindex='260' value='New Search'  class='PSPUSHBUTTON' style='width:152px; ' onclick="submitAction_win0(document.win0,this.id,event);" title='Start a New Search'  /></span></a>
+</DIV></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+<td colspan='2'  valign='top' align='left'>
+<DIV    id='win0div$ICField$7$'><table cellpadding='2' cellspacing='0' cols='1'  class='PABACKGROUNDINVISIBLEWBO'  width='167'>
+<tr><td width='165'>
+<table role='presentation'  border='0' id='ACE_$ICField$7$' cellpadding='0' cellspacing='0' cols='2' width='165' class='PABACKGROUNDINVISIBLE' style='border-style:none' >
+<tr>
+<td width='7' height='0'></td>
+<td width='158'></td>
+</tr>
+<tr>
+<td height='23'></td>
+<td nowrap='nowrap'  valign='top' align='left'>
+<DIV    id='win0divCLASS_SRCH_WRK2_SSR_PB_MODIFY$5$'><a role='presentation' class='PSPUSHBUTTON Left' ><span style='background-Color: transparent;'><input type='button' name='CLASS_SRCH_WRK2_SSR_PB_MODIFY$5$' id='CLASS_SRCH_WRK2_SSR_PB_MODIFY$5$' tabindex='261' value='Modify Search'  class='PSPUSHBUTTON' style='width:152px; ' onclick="submitAction_win0(document.win0,this.id,event);" /></span></a>
+</DIV></td>
+</tr>
+</table>
+</td></tr>
+</table>
+</DIV></td>
+</tr>
+<tr>
+<td height='10' colspan='13'></td>
+</tr>
+</table>
+</DIV>
+</td></tr>
+</table>
+<DIV class='x'  id='pt_dragtxt' class='PSLEVEL1GRIDCOLUMNHDR'></div><div onmouseup='ptGridResizeObj_win0.TDselUp();' onmousemove='ptGridResizeObj_win0.TDselMove();' id='pt_dragResize' onmouseout='ptGridResizeObj_win0.dragTD=false;' onmbouseover='ptGridResizeObj_win0.dragTD=true;'></div>]]></FIELD>
+<FIELD id='win0divPSPANELTABLINKS'><![CDATA[]]></FIELD>
+<SYSVAR id='sysvar'><![CDATA[nMaxSavedStates=5;
+sHistURL="https://uocampus.public.uottawa.ca/psc/csprpr9pub/EMPLOYEE/SA/c/UO_SR_AA_MODS.UO_PUB_CLSSRCH.GBL?page=UO_PUB_CLSSRCH_RES&";
+bCloseModal = false;
+bICList = false;
+bHtml5Doc = true;
+bClearBackState=false;
+bPageTransfered=true;
+bTransferAnimate=false;
+UpdateHistory('', '', 'returntolastpage@0', 'UO_PUB_CLSSRCH_RES', 0, '', 1, 0);
+AddToHistory('Search Results', '', 'returntolastpage@0', 'UO_PUB_CLSSRCH_RES', 2, 0, 1, 0,'', 1, '', 0);
+corsHistoryTansaction();
+bCleanHtml = false;
+bDefer = true;
+document.hiddenFldArr_win0 =new Array('ICType','ICElementNum','ICStateNum','ICAction','ICModelCancel','ICXPos','ICYPos','ResponsetoDiffFrame','TargetFrameName','FacetPath','ICFocus','ICSaveWarningFilter','ICChanged','ICSkipPending','ICAutoSave','ICResubmit','ICSID','ICActionPrompt','ICTypeAheadID','ICBcDomData','ICPanelName','ICFind','ICAddCount','ICAppClsData');
+document.chgFldArr_win0 = new Array();
+bCDATA = false;
+bAccessibleLayout = false;
+bGenDomInfo = false;
+]]></SYSVAR></PAGE>
