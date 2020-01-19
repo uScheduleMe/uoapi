@@ -163,6 +163,8 @@ class TestTimetableQuery(unittest.TestCase):
             )
 
     def test_format_form(self):
+        # Test "closed" sections being queried
+        #@TODO
         # Test "course" search
         with self.subTest("\"course\" search"):
             self.tq.format_form(qt.ErrorMessenger(), 2020, "winter", "mat", 3121)
@@ -229,9 +231,10 @@ class TestTimetableQuery(unittest.TestCase):
         with self.subTest("bad input"):
             self.mock_server.status_code = 200
             self.mock_server.swap_responses("GET", "good")
-            with self.tq:
+            with self.tq as gm:
                 response, messages = self.tq(4, "winter", "mat", 3121)
             self.assertEqual(response, "")
+            messages += gm
             self.assertIn({
                 "type": "error",
                 "message": "Year not valid",
@@ -242,10 +245,11 @@ class TestTimetableQuery(unittest.TestCase):
             self.mock_server.swap_responses("GET", "good")
             self.mock_server.swap_responses("POST", "good")
             with HTTMock(self.mock_server.http_response):
-                with self.tq:
+                with self.tq as gm:
                     self.mock_server.status_code = 400
                     response, messages = self.tq(2020, "winter", "mat", 3121)
             self.assertEqual(response, "")
+            messages += gm
             self.assertIn({
                 "type": "error",
                 "message": "POST error: 400",
@@ -255,9 +259,10 @@ class TestTimetableQuery(unittest.TestCase):
             self.mock_server.swap_responses("GET", "good")
             self.mock_server.swap_responses("POST", "bad")
             with HTTMock(self.mock_server.http_response):
-                with self.tq:
+                with self.tq as gm:
                     response, messages = self.tq(2020, "winter", "mat", 3121)
             self.assertEqual(response, "")
+            messages += gm
             self.assertIn({
                 "type": "error",
                 "message": "Unknown error in query response",
@@ -266,9 +271,10 @@ class TestTimetableQuery(unittest.TestCase):
             self.mock_server.swap_responses("GET", "good")
             self.mock_server.swap_responses("POST", "not found")
             with HTTMock(self.mock_server.http_response):
-                with self.tq:
+                with self.tq as gm:
                     response, messages = self.tq(2020, "winter", "mat", 3121)
             self.assertEqual(response, "")
+            messages += gm
             self.assertIn({
                 "type": "error",
                 "message": "No classes found",
@@ -278,9 +284,10 @@ class TestTimetableQuery(unittest.TestCase):
             self.mock_server.swap_responses("GET", "good")
             self.mock_server.swap_responses("POST", "good")
             with HTTMock(self.mock_server.http_response):
-                with self.tq:
+                with self.tq as gm:
                     response, messages = self.tq(2020, "winter", "mat", 3121)
             self.assertEqual(response, self.mock_server.post_response)
+            messages += gm
             self.assertIn({
                 "type": "success",
                 "message": "POST success",
@@ -290,9 +297,10 @@ class TestTimetableQuery(unittest.TestCase):
             self.mock_server.swap_responses("GET", "good")
             self.mock_server.swap_responses("POST", "good")
             with HTTMock(self.mock_server.http_response):
-                with self.tq:
+                with self.tq as gm:
                     response, messages = self.tq(2020, "fall", "mat", 3120)
             self.assertEqual(response, self.mock_server.post_response)
+            messages += gm
             self.assertIn({
                 "type": "warning",
                 "message": "Semester may not be available",

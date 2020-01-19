@@ -351,8 +351,8 @@ class TimetableQuery:
             # If `success` is False, don't check response
             success = success and self.check_response(response.text, em)
         if success:
-            return response.text, self.messages + em.msg_list
-        return "", self.messages + em.msg_list
+            return response.text, em.msg_list
+        return "", em.msg_list
 
 
 ##############################################################################
