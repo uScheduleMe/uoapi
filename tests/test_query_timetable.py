@@ -182,6 +182,8 @@ class TestTimetableQuery(unittest.TestCase):
                     "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$0".format(i),
                     self.tq.form,
                 )
+            self.assertNotIn("UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$chk$0", self.tq.form)
+            self.assertNotIn("UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$0", self.tq.form)
         with self.subTest("\"subject:year\" search"):
             self.tq.format_form(qt.ErrorMessenger(), 2020, "winter", "mat", 4)
             # Check if desired keys are set
@@ -192,7 +194,29 @@ class TestTimetableQuery(unittest.TestCase):
                 "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_04$0"
             ], "Y")
             # Check if other keys are not set
+            self.assertNotIn("SSR_CLSRCH_WRK_CATALOG_NBR$0", self.tq.form)
             for i in "123":
+                self.assertEqual(self.tq.form[
+                    "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$chk$0".format(i)
+                ], "N")
+                self.assertNotIn(
+                    "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$0".format(i),
+                    self.tq.form,
+                )
+            self.assertNotIn("UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$chk$0", self.tq.form)
+            self.assertNotIn("UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$0", self.tq.form)
+        with self.subTest("\"subject:year\" search (graduate)"):
+            self.tq.format_form(qt.ErrorMessenger(), 2020, "winter", "mat", 5)
+            # Check if desired keys are set
+            self.assertEqual(self.tq.form[
+                "UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$chk$0"
+            ], "Y")
+            self.assertEqual(self.tq.form[
+                "UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$0"
+            ], "Y")
+            # Check if other keys are not set
+            self.assertNotIn("SSR_CLSRCH_WRK_CATALOG_NBR$0", self.tq.form)
+            for i in "1234":
                 self.assertEqual(self.tq.form[
                     "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$chk$0".format(i)
                 ], "N")

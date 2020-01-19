@@ -270,6 +270,8 @@ class TimetableQuery:
                 "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$0".format(i),
                 True,
             )
+        self.form.pop("UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$chk$0", True)
+        self.form.pop("UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$0", True)
         self.form.pop("SSR_CLSRCH_WRK_CATALOG_NBR$0", True)
         # Update form and return
         self.form["CLASS_SRCH_WRK2_STRM$35$"] = semester
@@ -278,7 +280,8 @@ class TimetableQuery:
             self.form["SSR_CLSRCH_WRK_CATALOG_NBR$0"] = number
         elif "subject:year" == search:
             if "5" == number:
-                raise NotImplementedError()
+                self.form["UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$chk$0"] = "Y"
+                self.form["UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$0"] = "Y"
             else:
                 self.form[
                     "UO_PUB_SRCH_WRK_SSR_RPTCK_OPT_0{}$chk$0".format(number)
