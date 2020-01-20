@@ -13,3 +13,12 @@ To mock HTTP requests, this package uses `httmock`,
 which is `pip`-installable.
 For example usage, see the `httmock` homepage,
 or `tests/timetable/test_query_timetable.py`.
+
+# Versioning
+
+We use `<major>.<minor>.<patch>` version numbering.
+Major versions are reserved for non-backwards-compatible changes
+or when the format of the HTML being scraped changes.
+Minor versions are for the addition of backwards compatible changes.
+Patch versions are for backwards compatible bug fixes.
+Please update the git tag and update the changelog every time you commit a self-contained change.
