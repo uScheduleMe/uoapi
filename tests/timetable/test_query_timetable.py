@@ -5,7 +5,7 @@ import json
 import regex as re
 from httmock import urlmatch, HTTMock
 
-import query_timetable as qt
+import src.timetable.query_timetable as qt
 
 def absolute_path(path):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
@@ -319,7 +319,7 @@ def clear_messages(mapping, key="messages"):
 class TestTimetableParse(unittest.TestCase):
 
     def check_parsed(self, year, term, subject, code, ignore_msgs=False):
-        fname = f"tests/data/{subject}{code}_{term}{year}"
+        fname = absolute_path(f"data/{subject}{code}_{term}{year}")
         with open(fname + ".html", "r") as f:
             raw = f.read()
         with open(fname + ".json", "r") as f:
@@ -331,7 +331,7 @@ class TestTimetableParse(unittest.TestCase):
         self.assertEqual(parsed, correct)
 
     def test_course_examples(self):
-        with open("tests/data/examples.tsv", "r") as f:
+        with open(absolute_path("data/examples.tsv"), "r") as f:
             examples = [
                 re.split("\t+", x.strip())
                 for x in f.readlines()

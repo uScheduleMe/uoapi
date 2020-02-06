@@ -12,10 +12,13 @@ import requests
 from bs4 import BeautifulSoup
 import regex as re
 
-import patterns as pt
+import src.course.patterns as pt
 
 
 logging.getLogger(__name__)
+
+def absolute_path(path):
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
 
 
 ##############################################################################
@@ -103,7 +106,7 @@ def require_context(method):
 class TimetableQuery:
 
     def __init__(self, 
-        form: Union[str, dict] = "template_query.json", # if str, either file path or JSON
+        form: Union[str, dict] = absolute_path("template_query.json"), # if str, either file path or JSON
         orig_link: Union[str, bytes] = orig_link, 
         term_to_num: dict = term_to_num,
         default_headers: dict = default_headers,

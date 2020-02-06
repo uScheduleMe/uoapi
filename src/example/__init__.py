@@ -2,9 +2,9 @@ import argparse
 
 from uoapi import make_parser, make_cli
 try:
-    from template.template_functions import ford
+    from example.example_functions import ford
 except ModuleNotFoundError:
-    from template_functions import ford
+    from example_functions import ford
 
 description = "A template for how to create modules"
 help = "state the name of Arthur Dent's best friend"

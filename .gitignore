@@ -5,4 +5,4 @@ old*
 scrap
 scratch/*
 .coverage
-*/uoapi.py
+src/*/uoapi.py
