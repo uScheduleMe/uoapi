@@ -7,6 +7,9 @@ from httmock import urlmatch, HTTMock
 
 import src.timetable.query_timetable as qt
 
+#@TODO Test accented characters on various systems
+# e.g. accented characters/encoding caused tests to
+# fail on my Windows 10 laptop
 def absolute_path(path):
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
 
