@@ -106,7 +106,9 @@ def require_context(method):
 class TimetableQuery:
 
     def __init__(self, 
-        form: Union[str, dict] = absolute_path("template_query.json"), # if str, either file path or JSON
+        form: Union[str, dict] = absolute_path(
+            os.path.join("data", "template_query.json")
+        ), # if str, either file path or JSON
         orig_link: Union[str, bytes] = orig_link, 
         term_to_num: dict = term_to_num,
         default_headers: dict = default_headers,

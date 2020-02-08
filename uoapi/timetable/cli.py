@@ -1,10 +1,6 @@
 import argparse
 
 from uoapi.cli_tools import make_parser, make_cli
-try:
-    from template.code import *
-except ModuleNotFoundError:
-    from code import *
 
 description = ""
 help = ""
