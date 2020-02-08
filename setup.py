@@ -19,7 +19,7 @@ VERSION = __version__
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'requests', 'regex', 'bs4',
+    'requests', 'regex', 'bs4', 'lxml',
 ]
 
 # What packages are optional?
