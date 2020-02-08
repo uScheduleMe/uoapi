@@ -4,7 +4,7 @@ import itertools as it
 import functools as ft
 from importlib import import_module
 
-from uoapi.api_tools import absolute_path, default_parser, noop, make_cli
+from uoapi.cli_tools import absolute_path, default_parser, noop, make_cli
 
 
 ###############################################################################

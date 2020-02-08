@@ -1,6 +1,6 @@
 import argparse
 
-from uoapi.api_tools import make_parser, make_cli
+from uoapi.cli_tools import make_parser, make_cli
 from uoapi.example.example_functions import ford
 
 description = "A template for how to create modules"
