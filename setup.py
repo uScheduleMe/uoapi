@@ -3,10 +3,13 @@
 import io
 import os
 import sys
+import re
 
 from setuptools import find_packages, setup, Command
 
-from uoapi import __version__
+#from uoapi import __version__
+
+here = os.path.abspath(os.path.dirname(__file__))
 
 # Package meta-data.
 NAME = 'uoapi'
@@ -15,7 +18,9 @@ URL = 'https://github.com/andrewnags/uOcourses'
 EMAIL = 'anaga042@uottawa.ca'
 AUTHOR = 'Andrew Nagarajah'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = __version__
+#VERSION = __version__
+with io.open(os.path.join(here, "uoapi", "__version__.py")) as f:
+    VERSION = re.search("__version__\\s*=\\s*['\"]([^'\"]+)['\"]", f.read()).groups()[0].strip()
 
 # What packages are required for this module to be executed?
 REQUIRED = [
@@ -32,7 +37,6 @@ EXTRAS = {
 # Except, perhaps the License and Trove Classifiers!
 # If you do change the License, remember to change the Trove Classifier for that!
 
-here = os.path.abspath(os.path.dirname(__file__))
 
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.md' is present in your MANIFEST.in file!
