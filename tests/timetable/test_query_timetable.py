@@ -5,7 +5,7 @@ import json
 import regex as re
 from httmock import urlmatch, HTTMock
 
-import src.timetable.query_timetable as qt
+import uoapi.timetable.query_timetable as qt
 
 #@TODO Test accented characters on various systems
 # e.g. accented characters/encoding caused tests to

@@ -12,7 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 import regex as re
 
-import src.course.patterns as pt
+import uoapi.course.patterns as pt
 
 
 logging.getLogger(__name__)
