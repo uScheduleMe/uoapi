@@ -1,51 +1,21 @@
+import os
 import argparse
+import itertools as it
 import functools as ft
 from importlib import import_module
 
-###############################################################################
-#               UTILITIES
-###############################################################################
+from src.api_tools import absolute_path, default_parser, noop, make_cli
 
-def make_parser(**kwargs):
-    def parser_decorator(function):
-        @ft.wraps(function)
-        def parser(default=None):
-            if default is None:
-                default = argparse.ArgumentParser(**kwargs)
-            return function(default)
-        return parser
-    return parser_decorator
-
-def make_cli(default_parser):
-    def cli_decorator(function):
-        @ft.wraps(function)
-        def cli(args=None):
-            if isinstance(args, str):
-                args = args.split()
-            if isinstance(args, list):
-                args = default_parser().parse_args(args)
-            elif args is None:
-                args = default_parser().parse_args()
-            elif not isinstance(args, argparse.Namespace):
-                raise TypeError("Argument is not a str, list, or namespace")
-            return function(args)
-        return cli
-    return cli_decorator
-
-@make_parser()
-def default_parser(parser):
-    return parser
-
-def noop(*args, **kwargs):
-    pass
 
 ###############################################################################
 #               CONFIGURATION
 ###############################################################################
 
-subparser_names = [
-    "example",
-]
+#modules = [
+#    "example",
+#]
+with open(absolute_path("__modules__"), "r") as f:
+    modules = [x.strip() for x in f.readlines()]
 
 ###############################################################################
 #               GLOBAL PARSER AND CLI
@@ -61,11 +31,12 @@ def uoapi_parser():
     parser.add_argument("-l", "--log",
        help="Log to this file"
     )
+    parser.set_defaults(func=noop)
     
     # Add subparsers
     subparsers = parser.add_subparsers(title="actions")
-    for i, name in enumerate(subparser_names):
-        mod = import_module(name)
+    for name in modules:
+        mod = import_module("src." + name)
         sp = getattr(
             mod,
             "parser",

@@ -6,3 +6,6 @@ scrap
 scratch/*
 .coverage
 src/*/uoapi.py
+*.vscode
+*.vscode/*
+*.egg*
