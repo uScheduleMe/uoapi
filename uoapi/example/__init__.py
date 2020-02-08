@@ -1,7 +1,7 @@
 import argparse
 
-from src.api_tools import make_parser, make_cli
-from src.example.example_functions import ford
+from uoapi.api_tools import make_parser, make_cli
+from uoapi.example.example_functions import ford
 
 description = "A template for how to create modules"
 help = "state the name of Arthur Dent's best friend"

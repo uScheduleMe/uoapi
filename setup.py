@@ -6,7 +6,7 @@ import sys
 
 from setuptools import find_packages, setup, Command
 
-from src import __version__
+from uoapi import __version__
 
 # Package meta-data.
 NAME = 'uoapi'
@@ -53,8 +53,8 @@ about = {}
 about['__version__'] = VERSION
 
 # Find modules
-with open(os.path.join("src", "__modules__"), "r") as f:
-    modules = ["src"] + ["src." + x.strip() for x in f.readlines()]
+with open(os.path.join("uoapi", "__modules__"), "r") as f:
+    modules = ["uoapi"] + ["uoapi." + x.strip() for x in f.readlines()]
 
 
 # Where the magic happens:
@@ -72,7 +72,7 @@ setup(
     #packages=find_packages(
     #    #exclude=["tests", "*.tests", "*.tests.*", "tests.*"],
     #),
-    package_dir={"uoapi": "src"},
+    package_dir={"uoapi": "uoapi"},
     package_data = {"uoapi": ["__modules__"]},
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],

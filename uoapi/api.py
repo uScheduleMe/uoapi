@@ -4,7 +4,7 @@ import itertools as it
 import functools as ft
 from importlib import import_module
 
-from src.api_tools import absolute_path, default_parser, noop, make_cli
+from uoapi.api_tools import absolute_path, default_parser, noop, make_cli
 
 
 ###############################################################################
@@ -36,7 +36,7 @@ def uoapi_parser():
     # Add subparsers
     subparsers = parser.add_subparsers(title="actions")
     for name in modules:
-        mod = import_module("src." + name)
+        mod = import_module("uoapi." + name)
         sp = getattr(
             mod,
             "parser",
