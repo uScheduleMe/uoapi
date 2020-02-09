@@ -80,10 +80,8 @@ def cli(args=None):
     if args is None:
         print("Did not receive any arguments", file=sys.stderr)
         sys.exit(1)
-    tq = qt.TimetableQuery(retries=args.retries)
     if args.available:
-        with tq as gm:
-            print(json.dumps({"available": list(tq.available.values())}))
+        print(json.dumps(available(args.retries)))
     elif args.year is None:
         print("Did not receive a year", file=sys.stderr)
         sys.exit(1)
@@ -95,21 +93,37 @@ def cli(args=None):
         sys.exit(1)
     else:
         args.waittime = max(0, args.waittime)
-        with tq as gm:
-            for i, arg in enumerate(args.courses):
-                if i > 0 and args.refresh > 0 and i % args.retries == 0:
-                    tq.refresh()
-                for subj, code in get_subj_code(arg):
-                    resp, msgs = tq(args.year, args.term, subj, code)
-                    if resp == "":
-                        print(json.dumps({"messages": msgs}))
-                    else:
-                        print(json.dumps({
-                            "courses": list(qt.extract_timetable(resp, args.year, args.term)),
-                            "messages": msgs,
-                        }))
-                time.sleep(args.waittime)
-            
+        for out in main(
+            args.courses, args.year, args.term, 
+            args.refresh, args.retries, args.waittime,
+        ):
+            print(json.dumps(out))
+
+def available(retries):
+    tq = qt.TimetableQuery(retries=retries)
+    with tq as gm:
+        out = {"available": list(tq.available.values())}
+    out["messages"] = gm
+    return out
+
+def main(courses, year, term, refresh=10, retries=2, waittime=0.5):
+    tq = qt.TimetableQuery(retries=retries)
+    with tq as gm:
+        for i, course in enumerate(courses):
+            if i > 0 and refresh > 0 and i % refresh == 0:
+                tq.refresh()
+            for subj, code in get_subj_code(course):
+                resp, msgs = tq(year, term, subj, code)
+                yield {
+                    "courses": ([] if "" == resp 
+                        else list(qt.extract_timetable(resp, year, term))
+                    ),
+                    "messages": msgs,
+                }
+            time.sleep(waittime)
+    yield {
+        "messages": gm
+    }
 
 if __name__ == "__main__":
     cli()
