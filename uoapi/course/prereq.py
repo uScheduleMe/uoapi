@@ -1,5 +1,6 @@
-import patterns as pt
 import itertools as it
+
+from uoapi.course import patterns as pt
 
 class Prereq:
     '''
