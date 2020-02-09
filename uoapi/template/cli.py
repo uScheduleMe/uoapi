@@ -14,5 +14,8 @@ def parser(default):
 def cli(args=None):
     raise NotImplementedError()
 
+def main():
+    raise NotImplementedError()
+
 if __name__ == "__main__":
     cli()
