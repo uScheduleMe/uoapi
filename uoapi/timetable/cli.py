@@ -1,9 +1,10 @@
-import sys, time
+import os, sys, time
 import json
 import argparse
 
 import regex as re
 
+from uoapi import __version__
 from uoapi.cli_tools import make_parser, make_cli
 from uoapi.timetable import query_timetable as qt
 
@@ -41,6 +42,12 @@ def parser(default):
         metavar="XXX[0[000]]",
         nargs="*",
         help="list of course codes to query"
+    )
+    default.add_argument("-s", "--saveraw",
+        action="store",
+        metavar="/PATH/TO/DIR/",
+        required=False,
+        help="if given, save raw html in this folder"
     )
     default.add_argument("-w", "--waittime",
         action="store",
@@ -95,7 +102,7 @@ def cli(args=None):
         args.waittime = max(0, args.waittime)
         for out in main(
             args.courses, args.year, args.term, 
-            args.refresh, args.retries, args.waittime,
+            args.saveraw, args.refresh, args.retries, args.waittime,
         ):
             print(json.dumps(out))
 
@@ -106,14 +113,26 @@ def available(retries):
     out["messages"] = gm
     return out
 
-def main(courses, year, term, refresh=10, retries=2, waittime=0.5):
+def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5):
     tq = qt.TimetableQuery(retries=retries)
+    if saveraw is not None and os.path.isdir(saveraw):
+        saveraw = os.path.join(saveraw, __version__, str(year), str(term))
+        os.makedirs(
+            saveraw,
+            mode=0o770,
+            exist_ok=True,
+        )
     with tq as gm:
         for i, course in enumerate(courses):
             if i > 0 and refresh > 0 and i % refresh == 0:
                 tq.refresh()
             for subj, code in get_subj_code(course):
                 resp, msgs = tq(year, term, subj, code)
+                if saveraw is not None and os.path.isdir(saveraw):
+                    with open(os.path.join(saveraw,
+                        str.lower("{}_{}.html".format(subj, code))
+                    ), "w") as f:
+                        f.write(resp)
                 yield {
                     "courses": ([] if "" == resp 
                         else list(qt.extract_timetable(resp, year, term))

@@ -43,9 +43,9 @@ def uoapi_parser():
             default_parser
         )(subparsers.add_parser(
             name,
-            description=getattr(mod, "description", ""),
-            help=getattr(mod, "help", ""),
-            epilog=getattr(mod, "epilog", None),
+            description=getattr(mod, "cli_description", ""),
+            help=getattr(mod, "cli_help", ""),
+            epilog=getattr(mod, "cli_epilog", None),
         ))
         sp.set_defaults(func=getattr(
             mod,
