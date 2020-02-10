@@ -20,6 +20,10 @@ The `parser` and `cli` functions must be decorated with
 their respective `make_*` decorators from `cli_tools.py`.
 Please also try to include a function `py_cli.py` which
 replicates the functionality of your CLI inside python.
+Please also add sample usage to the `README.md`,
+as well as sample output.
+If the output is large, you may put it in the wiki.
+
 You may copy the `template` folder to get started.
 
 To contribute, please fork this repository 
