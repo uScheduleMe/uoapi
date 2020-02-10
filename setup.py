@@ -24,7 +24,7 @@ with io.open(os.path.join(here, "uoapi", "__version__.py")) as f:
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'requests', 'regex', 'bs4', 'lxml',
+    'requests', 'regex', 'bs4', 'lxml', 'pandas', 'parsedatetime'
 ]
 
 # What packages are optional?
