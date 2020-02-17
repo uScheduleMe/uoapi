@@ -4,7 +4,7 @@ from uoapi.rate_my_prof import getTeachersAndRatingBySchool
 from uoapi.cli_tools import make_parser, make_cli
 
 description = "A tool for querying rate my prof"
-help = ""
+help = "Make sure to provide a --school (-s) flag with the school name."
 epilog = ""
 
 @make_parser(description=description, epilog=epilog)
