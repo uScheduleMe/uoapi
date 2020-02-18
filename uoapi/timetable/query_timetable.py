@@ -502,9 +502,9 @@ def extract_section(section, descr, log=False):
             if i < len(instrs) else "NA",
         "day": dttms[i][0].strip().upper()
             if i < len(dttms) else "NA",
-        "start": dttms[i][-1].strip().split("-")[0].strip()
+        "start_time": dttms[i][-1].strip().split("-")[0].strip()
             if i < len(dttms) else "NA",
-        "end": dttms[i][-1].strip().split("-")[-1].strip()
+        "end_time": dttms[i][-1].strip().split("-")[-1].strip()
             if i < len(dttms) else "NA",
         "start_date": topic[i][0]
             if i < len(topic) else "NA",
@@ -553,7 +553,7 @@ def extract_course(course, year, term, log=False):
     )
     course_out["sections"] = [{
         "year": year,
-        "semester": term,
+        "term": term,
         "id": id_,
         "components": components
     } for id_, components in course_out["sections"].items()]
