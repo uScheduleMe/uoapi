@@ -435,7 +435,7 @@ def extract_section(section, descr, log=False):
         status = "NA"
     # Extract elements common to the section
     section_out = {
-        "id": sec_id.strip(),
+        "label": sec_id.strip(),
         "section_id": id_,
         "type": type_,
         "session_type": sec_type.strip(),
@@ -554,7 +554,7 @@ def extract_course(course, year, term, log=False):
     course_out["sections"] = [{
         "year": year,
         "term": term,
-        "id": id_,
+        "label": id_,
         "components": components
     } for id_, components in course_out["sections"].items()]
     return course_out
@@ -567,12 +567,12 @@ def distribute_shared_sections(
     em = ErrorMessenger(messages, log=log)
     sec_comps = {}
     for section in sections:
-        sec_comps[section["id"]] = []
+        sec_comps[section["label"]] = []
         for component in section["components"]:
-            if component["type"] not in sec_comps[section["id"]]:
-                sec_comps[section["id"]].append(component["type"])
+            if component["type"] not in sec_comps[section["label"]]:
+                sec_comps[section["label"]].append(component["type"])
     # Get sections with x distinct IDs for each x.
-    arr_lookup = lambda elt: len(sec_comps[elt["id"]])
+    arr_lookup = lambda elt: len(sec_comps[elt["label"]])
     comp_secs = group_by_eq(sections, arr_lookup)
     # If there are no sections with only one ID,
     # this course is already well distributed.
@@ -582,26 +582,26 @@ def distribute_shared_sections(
     sections_out = []
     bad_sec_ids = set()
     for section in sections:
-        if section["id"] in bad_sec_ids:
+        if section["label"] in bad_sec_ids:
             continue
         for bad_section in comp_secs[1]:
             #@TODO Decide between these two filters
             #if sec_comps[bad_section["id"]][0] == "LEC":
             #    continue
-            if sec_comps[bad_section["id"]][0] in sec_comps[section["id"]]:
+            if sec_comps[bad_section["label"]][0] in sec_comps[section["label"]]:
                 continue
             #
             if (arr_lookup(section) == 1
-            and sec_comps[bad_section["id"]][0]
-                == sec_comps[section["id"]][0]
+            and sec_comps[bad_section["label"]][0]
+                == sec_comps[section["label"]][0]
             ):
                 continue
             section["components"] = section["components"] + bad_section["components"]
-            bad_sec_ids.add(bad_section["id"])
+            bad_sec_ids.add(bad_section["label"])
             em(
                 "info",
                 "Merged sections %s and %s"
-                    % (section["id"], bad_section["id"])
+                    % (section["label"], bad_section["label"])
             )
         sections_out.append(section)
     return sections_out
