@@ -74,7 +74,7 @@ def main(subjects=True, courses=False, subject_list=None, waittime=0.5):
         if subject_list is None or x["code"] in subject_list
     )
     for subj, link in subjects:
-        yield {"courses": {"subject": subj, "courses": list(get_courses(link))}}
+        yield {"courses": {"subject_code": subj, "courses": list(get_courses(link))}}
         time.sleep(waittime)
 
 if __name__ == "__main__":
