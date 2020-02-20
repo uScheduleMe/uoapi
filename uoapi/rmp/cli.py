@@ -1,6 +1,6 @@
 import argparse
 import json
-from uoapi.rate_my_prof import getTeachersAndRatingBySchool
+from uoapi.rmp import get_teachers_ratings_by_school
 from uoapi.cli_tools import make_parser, make_cli
 
 description = "A tool for querying rate my prof"
@@ -21,12 +21,13 @@ def cli(args=None):
     if args is None:
         print("Did not receive any arguments", file=sys.stderr)
         sys.exit(1)
-    print(json.dumps(main(args.school)))
+    for out in main(args.school):
+        print(json.dumps(out))
 
 def main(school=None):
     if not school:
         return
-    return getTeachersAndRatingBySchool(school)
+    yield get_teachers_ratings_by_school(school)
 
     
     
