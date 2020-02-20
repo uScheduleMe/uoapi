@@ -124,6 +124,7 @@ def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5)
         )
     with tq as gm:
         for i, course in enumerate(courses):
+            #@TODO Move refresh to TimetableQuery clas
             if i > 0 and refresh > 0 and i % refresh == 0:
                 tq.refresh()
             for subj, code in get_subj_code(course):
