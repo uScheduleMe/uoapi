@@ -417,6 +417,10 @@ section_tag_is_classname = lambda x: search_tag(
                                 "MTG_CLASSNAME"
                            )
 
+def normalize_whitespace(string):
+    string = string.replace('\xa0', ' ')
+    string = string.replace('&nbsp;', ' ')
+    return string.strip()
 # Scraping
 
 def extract_section(section, descr, log=False):
@@ -435,12 +439,12 @@ def extract_section(section, descr, log=False):
         status = "NA"
     # Extract elements common to the section
     section_out = {
-        "label": sec_id.strip(),
-        "section_id": id_,
-        "type": type_,
-        "session_type": sec_type.strip(),
-        "status": status,
-        "description": descr,
+        "label": sec_id.strip().upper(),
+        "section_id": id_.strip().upper(),
+        "type": type_.strip().upper(),
+        "session_type": sec_type.strip().upper(),
+        "status": status.strip().upper(),
+        "description": normalize_whitespace(descr),
     }
     # Extract individual components
     rooms = [x.strip() for x in section(lambda x:  
@@ -496,9 +500,9 @@ def extract_section(section, descr, log=False):
     n = max(map(len, (rooms, instrs, topic, dttms)))
     #
     return [{
-        "room": rooms[i]
+        "room": normalize_whitespace(rooms[i])
             if i < len(rooms) else "NA",
-        "instructor": instrs[i]
+        "instructor": normalize_whitespace(instrs[i])
             if i < len(instrs) else "NA",
         "day": dttms[i][0].strip().upper()
             if i < len(dttms) else "NA",
@@ -520,9 +524,9 @@ def extract_course(course, year, term, log=False):
     ).group().split()
     title = pt.code_re.sub("", title).strip().strip("-").strip()
     course_out = {
-        "subject_code": subject_code,
-        "course_number": course_number,
-        "course_name": title,
+        "subject_code": subject_code.strip().upper(),
+        "course_number": course_number.strip().upper(),
+        "course_name": normalize_whitespace(title),
         "sections": [],
         "messages": [],
     }
@@ -553,8 +557,8 @@ def extract_course(course, year, term, log=False):
     )
     course_out["sections"] = [{
         "year": year,
-        "term": term,
-        "label": id_,
+        "term": term.strip().lower(),
+        "label": id_.strip().upper(),
         "components": components
     } for id_, components in course_out["sections"].items()]
     return course_out

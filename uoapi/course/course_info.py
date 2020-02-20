@@ -63,7 +63,7 @@ def scrape_subjects(url=course_url):
                   for tag in subj_tags]
     return [{
         "subject": pt.subj_re.sub("", x[0]).strip(),
-        "code": x[1],
+        "subject_code": x[1].upper(),
         "link": url + x[1] + "/",
     } for x in subj_table]
     #subjects = pd.DataFrame(subj_table, columns=['Subject', 'Code'])
@@ -76,14 +76,13 @@ def scrape_subjects(url=course_url):
 def get_courses(link):
     '''
     Scrapes the page given by link for courses and their descriptions, components, prerequisites, etc.
-    Used in get_subjects.ipynb
     '''
-    courses = []
     raw_courses = BeautifulSoup(requests.get(link).text, 'html.parser')
     raw_courses = raw_courses.find_all('div', attrs = {'class':'courseblock'})
     for course in raw_courses:
         try:
             title = course.find('p', attrs={'class':'courseblocktitle'}).text.replace('\xa0', ' ').strip()
+            title = title.replace("&nbsp;", " ").strip()
         except AttributeError as e:
             print(course, file=sys.stderr)
             raise e
@@ -105,7 +104,9 @@ def get_courses(link):
         blocks = []
         for block in course.find_all('p', attrs={'class':'courseblockextra'}):
             try:
-                blocks.append(block.text.replace('\xa0', ' ').strip().strip('.'))
+                block = block.text.replace('\xa0', ' ').strip().strip('.')
+                block = block.replace("&nbsp;", " ").strip().strip('.')
+                blocks.append(block)
             except AttributeError as e:
                 print(course)
                 print(block)
@@ -148,14 +149,13 @@ def get_courses(link):
         desc = desc.strip()
         #getting the components from after the colon in the sentence
         comp = comp.split(':', 1)[-1].strip()
-        comp = [x.strip() for x in comp.split('/')[-1].split(',')]
+        comp = [x.strip().upper() for x in comp.split('/')[-1].split(',')]
         #getting the prerequisites from after the colon in the sentence
         dep = Prereq(pre).prereqs
         pre = pre.split(':', 1)[-1].strip()
         #TODO: ideally we would like to save the whole Prereq object to the dataframe, but since it does not output to json, using this in the meantime
-        courses.append([code, title, credits, desc, comp, pre, dep])
         yield {
-            "code": code,
+            "course_code": pt.code_groups.search(code).groups()[1].upper(),
             "title": title,
             "credits": credits,
             "description": desc,
