@@ -68,10 +68,10 @@ def main(subjects=True, courses=False, subject_list=None, waittime=0.5):
     if len(subject_list) == 0:
         subject_list = None
     else:
-        subject_list = {x.strip().lower() for x in subject_list}
+        subject_list = {x.strip().upper() for x in subject_list}
     subjects = (
-        (x["code"], x["link"]) for x in subj 
-        if subject_list is None or x["code"] in subject_list
+        (x["subject_code"], x["link"]) for x in subj 
+        if subject_list is None or x["subject_code"] in subject_list
     )
     for subj, link in subjects:
         yield {"courses": {"subject_code": subj, "courses": list(get_courses(link))}}
