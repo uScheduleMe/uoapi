@@ -327,7 +327,7 @@ class TestTimetableParse(unittest.TestCase):
             raw = f.read()
         with open(fname + ".json", "r") as f:
             correct = json.load(f)
-        parsed = list(qt.extract_timetable(raw, year, term))
+        parsed = list(qt.extract_timetable(raw, int(year), term))
         if ignore_msgs:
             clear_messages(parsed)
             clear_messages(correct)

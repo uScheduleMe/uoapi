@@ -434,15 +434,15 @@ def extract_section(section, descr, log=False):
         )
     )
     if len(status) > 0 and len(status[0]("img")) > 0:
-        status = status[0]("img")[0].attrs.get("alt", "na").strip().upper()
+        status = status[0]("img")[0].attrs.get("alt", "").strip().upper()
     else:
-        status = "NA"
+        status = ""
     # Extract elements common to the section
     section_out = {
         "label": sec_id.strip().upper(),
         "section_id": id_.strip().upper(),
         "type": type_.strip().upper(),
-        "session_type": sec_type.strip().upper(),
+        "session_type": sec_type.strip().strip(".").strip().upper(),
         "status": status.strip().upper(),
         "description": normalize_whitespace(descr),
     }
@@ -468,7 +468,7 @@ def extract_section(section, descr, log=False):
                 "Incorrect number of dates ({})".format(len(s))
                 +" found in string {}".format(i),
             )
-        s += ["NA"] * max(0, 2 - len(s))
+        s += [""] * max(0, 2 - len(s))
         topic[i] = s
     dttms = [x.strip().split(" ", 1) for x in section(lambda x:  
             search_tag(x, "span", "id", "MTG_DAYTIME"))[0].contents 
@@ -501,19 +501,19 @@ def extract_section(section, descr, log=False):
     #
     return [{
         "room": normalize_whitespace(rooms[i])
-            if i < len(rooms) else "NA",
+            if i < len(rooms) else "",
         "instructor": normalize_whitespace(instrs[i])
-            if i < len(instrs) else "NA",
+            if i < len(instrs) else "",
         "day": dttms[i][0].strip().upper()
-            if i < len(dttms) else "NA",
+            if i < len(dttms) else "",
         "start_time": dttms[i][-1].strip().split("-")[0].strip()
-            if i < len(dttms) else "NA",
+            if i < len(dttms) else "",
         "end_time": dttms[i][-1].strip().split("-")[-1].strip()
-            if i < len(dttms) else "NA",
+            if i < len(dttms) else "",
         "start_date": topic[i][0]
-            if i < len(topic) else "NA",
+            if i < len(topic) else "",
         "end_date": topic[i][1]
-            if i < len(topic) else "NA",
+            if i < len(topic) else "",
         **section_out
     } for i in range(n)], em.msg_list
 
