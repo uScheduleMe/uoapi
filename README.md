@@ -1,3 +1,6 @@
+### Build Status
+![Pytest](https://github.com/andrewnags/uoapi/workflows/Pytest/badge.svg)
+
 ### Installation
 
 At the moment, this project is still in development,
