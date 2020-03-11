@@ -22,10 +22,9 @@ REQUIRES_PYTHON = '>=3.6.0'
 with io.open(os.path.join(here, "uoapi", "__version__.py")) as f:
     VERSION = re.search("__version__\\s*=\\s*['\"]([^'\"]+)['\"]", f.read()).groups()[0].strip()
 
-# What packages are required for this module to be executed?
-REQUIRED = [
-    'requests', 'regex', 'bs4', 'lxml', 'pandas', 'parsedatetime'
-]
+# What packages are required for this module to be executed
+with io.open(os.path.join(here, "requirements.txt")) as f:
+    REQUIRED = [line for line in f]
 
 # What packages are optional?
 EXTRAS = {
