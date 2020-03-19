@@ -14,7 +14,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 # Package meta-data.
 NAME = 'uoapi'
 DESCRIPTION = 'An API for retrieving public data from the University of Ottawa.'
-URL = 'https://github.com/andrewnags/uOcourses'
+URL = 'https://github.com/andrewnags/uoapi'
 EMAIL = 'anaga042@uottawa.ca'
 AUTHOR = 'Andrew Nagarajah'
 REQUIRES_PYTHON = '>=3.6.0'
