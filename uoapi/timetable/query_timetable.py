@@ -306,9 +306,14 @@ class TimetableQuery:
         msg = response.find(lambda x: search_tag(
             x, "span", "id", "DERIVED_CLSMSG_ERROR_TEXT"
         ))
-        if msg is not None and msg.contents[0].strip().lower() == "no classes found":
-            em("error", "No classes found")
-            return False
+        if msg is not None:
+            msg = msg.contents[0].strip().lower()
+            if msg == "no classes found":
+                em("error", "No classes found")
+                return False
+            elif any(x in msg for x in "exceed maximum limit".split()):
+                em("error", "Exceeded maximum number of sections")
+                return False
         #@TODO Add failure modes
         # Expected
         msg = response.find(lambda x: search_tag(

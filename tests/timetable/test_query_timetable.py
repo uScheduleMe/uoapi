@@ -29,6 +29,8 @@ class MockServer:
             self.post["good"] = f.read()
         with open(absolute_path("data/not_found.html"), "r") as f:
             self.post["not found"] = f.read()
+        with open(absolute_path("data/exceeded_limit.html"), "r") as f:
+            self.post["exceeded limit"] = f.read()
         self.post["bad"] = self.get["good"]
         self.get["bad format"] = self.post["good"]
         with open(absolute_path("data/get_icsid.txt"), "r") as f:
@@ -258,6 +260,7 @@ class TestTimetableQuery(unittest.TestCase):
                 "message": "POST error: 400",
             }, messages)
         with self.subTest("bad response"):
+            # Check for unkown errors
             self.mock_server.status_code = 200
             self.mock_server.swap_responses("GET", "good")
             self.mock_server.swap_responses("POST", "bad")
@@ -270,6 +273,7 @@ class TestTimetableQuery(unittest.TestCase):
                 "type": "error",
                 "message": "Unknown error in query response",
             }, messages)
+            # Check for no classes found
             self.mock_server.status_code = 200
             self.mock_server.swap_responses("GET", "good")
             self.mock_server.swap_responses("POST", "not found")
@@ -281,6 +285,19 @@ class TestTimetableQuery(unittest.TestCase):
             self.assertIn({
                 "type": "error",
                 "message": "No classes found",
+            }, messages)
+            # Check for too many sections found
+            self.mock_server.status_code = 200
+            self.mock_server.swap_responses("GET", "good")
+            self.mock_server.swap_responses("POST", "exceeded limit")
+            with HTTMock(self.mock_server.http_response):
+                with self.tq as gm:
+                    response, messages = self.tq(2020, "winter", "mat", 3121)
+            self.assertEqual(response, "")
+            messages += gm
+            self.assertIn({
+                "type": "error",
+                "message": "Exceeded maximum number of sections",
             }, messages)
         with self.subTest("good response"):
             self.mock_server.status_code = 200
