@@ -39,12 +39,15 @@ class MockServer:
         self.status_code = 200
         self.swap_responses("GET", "good")
         self.swap_responses("POST", "good")
+        self.record_get = None
 
     @urlmatch(netloc=r".*uocampus[.]public[.]uottawa[.]ca.*")
     def http_response(self, url, request):
         self.url = url
         self.request = request
         if "GET" == request.method:
+            if self.record_get is not None:
+                self.record_get += 1
             return {"status_code": self.status_code,
                     "content": self.get_response}
         elif "POST" == request.method:
@@ -55,6 +58,11 @@ class MockServer:
 
     def swap_responses(self, method="GET", target="good"):
         if "GET" == method:
+            if target == "record":
+                self.record_get = 0
+                target = "good"
+            else:
+                self.record_get = None
             self.get_response = self.get[target]
         elif "POST" == method:
             self.post_response = self.post[target]
@@ -69,10 +77,7 @@ class TestTimetableQuery(unittest.TestCase):
 
     def setUp(self):
         self.mock_server = MockServer()
-        self.tq = qt.TimetableQuery()
-        #with HTTMock(self.mock_server.http_response):
-        #    self.tq = qt.TimetableQuery()
-        #self.get_response = self.mock_server.response
+        self.tq = qt.TimetableQuery(refresh=0)
 
     def check_in_context(self, in_context=False):
         if in_context:
@@ -325,6 +330,17 @@ class TestTimetableQuery(unittest.TestCase):
                 "type": "warning",
                 "message": "Semester may not be available",
             }, messages)
+        with self.subTest("refresh connection"):
+            self.mock_server.status_code = 200
+            self.mock_server.swap_responses("GET", "record")
+            self.mock_server.swap_responses("POST", "good")
+            tq = qt.TimetableQuery(refresh=2)
+            with HTTMock(self.mock_server.http_response), tq as gm:
+                for i in range(3):
+                    self.assertEqual(self.mock_server.record_get, 1)
+                    response, messages = tq(2020, "fall", "mat", 3120)
+                self.assertEqual(self.mock_server.record_get, 2)
+
 
 def clear_messages(mapping, key="messages"):
     if isinstance(mapping, list):

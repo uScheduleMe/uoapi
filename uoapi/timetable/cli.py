@@ -114,7 +114,7 @@ def available(retries):
     return out
 
 def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5):
-    tq = qt.TimetableQuery(retries=retries)
+    tq = qt.TimetableQuery(retries=retries, refresh=refresh)
     if saveraw is not None and os.path.isdir(saveraw):
         saveraw = os.path.join(saveraw, __version__, str(year), str(term))
         os.makedirs(
@@ -124,9 +124,6 @@ def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5)
         )
     with tq as gm:
         for i, course in enumerate(courses):
-            #@TODO Move refresh to TimetableQuery clas
-            if i > 0 and refresh > 0 and i % refresh == 0:
-                tq.refresh()
             for subj, code in get_subj_code(course):
                 resp, msgs = tq(year, term, subj, code)
                 if saveraw is not None and os.path.isdir(saveraw):

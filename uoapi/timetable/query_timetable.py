@@ -113,6 +113,7 @@ class TimetableQuery:
         term_to_num: dict = term_to_num,
         default_headers: dict = default_headers,
         retries: int = 2,
+        refresh: int = 10,
         sleeptime: Union[int, float] = 0.5,
         log: bool = False,
     ):
@@ -128,6 +129,7 @@ class TimetableQuery:
         self.term_to_num = dict(term_to_num)
         self.default_headers = dict(default_headers)
         self.retries = retries
+        self.refresh_after = refresh
         self.sleeptime = sleeptime
         self.log = log
         self.__exit__(*[None]*3)
@@ -139,6 +141,7 @@ class TimetableQuery:
             raise Exception("Cannot enter this context manager if already successfully entered")
         self.session = requests.Session()
         self.messages = messages = []
+        self.refresh_count = 0
         self.in_context = True
         if not self.refresh():
             self.__exit__(*[None]*3)
@@ -149,6 +152,7 @@ class TimetableQuery:
             self.session.close()
         self.session = self.messages = None
         self.available = {}
+        self.refresh_count = 0
         self.in_context = False
 
     @require_context
@@ -333,6 +337,18 @@ class TimetableQuery:
         if not self.in_context:
             em("error", "Could not connect to school server")
             return "", em.msg_list
+        with open("/home/ajn/Documents/uoapi/scratch/test2.txt", "a") as f:
+            print(self.refresh_count, self.refresh_after, file=f)
+        if self.refresh_count >= self.refresh_after > 0:
+            with open("/home/ajn/Documents/uoapi/scratch/test2.txt", "a") as f:
+                print("Refreshing", file=f)
+            if self.refresh():
+                self.refresh_count = 0
+            else:
+                self.__exit__(*[None]*3)
+                em("error", "Could not connect to school server")
+                return "", em.msg_list
+        self.refresh_count += 1
         # We raise exceptions in format_form instead of using
         # the ErrorMessenger since we want to short-circuit
         # this method if it fails (`success = False`).
