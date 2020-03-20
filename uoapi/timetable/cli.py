@@ -132,7 +132,7 @@ def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5)
                 if saveraw is not None and os.path.isdir(saveraw):
                     with open(os.path.join(saveraw,
                         str.lower("{}_{}.html".format(subj, code))
-                    ), "w") as f:
+                    ), "w", encoding="utf-8") as f:
                         f.write(resp)
                 yield {
                     "courses": ([] if "" == resp 
