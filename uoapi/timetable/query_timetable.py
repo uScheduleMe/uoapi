@@ -67,7 +67,7 @@ class ErrorMessenger:
             **kwargs
         })
         if err_type == "success":
-            err_type = "debug"
+            err_type = "info"
         err_type = err_type.strip().upper()
         err_no = getattr(logging, err_type, 10)
         if self.log:
@@ -313,7 +313,7 @@ class TimetableQuery:
         if msg is not None:
             msg = msg.contents[0].strip().lower()
             if msg == "no classes found":
-                em("error", "No classes found")
+                em("warning", "No classes found")
                 return False
             elif any(x in msg for x in "exceed maximum limit".split()):
                 em("error", "Exceeded maximum number of sections")
@@ -334,16 +334,16 @@ class TimetableQuery:
         *args, **kwargs
     ) -> Tuple[Union[str, bytes], List[dict]]:
         em = ErrorMessenger(log=self.log)
-        if not self.in_context:
-            em("error", "Could not connect to school server")
-            return "", em.msg_list
         if self.refresh_count >= self.refresh_after > 0:
             if self.refresh():
                 self.refresh_count = 0
             else:
                 self.__exit__(*[None]*3)
-                em("error", "Could not connect to school server")
-                return "", em.msg_list
+                # In this case, `self.in_context` will be `False`,
+                # so exit will be handled by clause below.
+        if not self.in_context:
+            em("error", "Could not connect to school server")
+            return "", em.msg_list
         self.refresh_count += 1
         # We raise exceptions in format_form instead of using
         # the ErrorMessenger since we want to short-circuit
@@ -481,7 +481,7 @@ def extract_section(section, descr, log=False):
         s = [re.sub(r"\s*", "", x) for x in date_re.findall(s)]
         if len(s) != 2:
             em(
-                "warning" if len(s) < 2 else "info",
+                "debug" if len(s) < 2 else "info",
                 "Incorrect number of dates ({})".format(len(s))
                 +" found in string {}".format(i),
             )
@@ -495,11 +495,11 @@ def extract_section(section, descr, log=False):
     #@TODO Move to own function
     n = max(map(len, (rooms, instrs, topic, dttms)))
     if min(map(len, (rooms, instrs, topic, dttms))) < n:
-        em("warning", "inconsistent details length in %s" % id_)
+        em("debug", "inconsistent details length in %s" % id_)
     # Handle multiple instructors
     if (len(instrs) / len(dttms)) % 1 != 0:
         em(
-            "warning", 
+            "debug", 
             "number of instructors not a multiple of number of days: "
             +"id %s, instructors %i, days %i" % (sec_id, len(instrs), len(dttms))
         )
@@ -511,7 +511,7 @@ def extract_section(section, descr, log=False):
     elif len(instrs) < len(dttms):
         instrs = [", ".join(sorted(set(instrs)))] * len(dttms)
         em(
-            "warning",
+            "debug",
             "distributing instructors accross days"
         )
     n = max(map(len, (rooms, instrs, topic, dttms)))
@@ -620,7 +620,7 @@ def distribute_shared_sections(
             section["components"] = section["components"] + bad_section["components"]
             bad_sec_ids.add(bad_section["label"])
             em(
-                "info",
+                "debug",
                 "Merged sections %s and %s"
                     % (section["label"], bad_section["label"])
             )

@@ -1,3 +1,6 @@
+import logging
+logging.getLogger(__name__)
+
 import os, sys, time
 import json
 import argparse
@@ -114,7 +117,7 @@ def available(retries):
     return out
 
 def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5):
-    tq = qt.TimetableQuery(retries=retries, refresh=refresh)
+    tq = qt.TimetableQuery(log=True, retries=retries, refresh=refresh)
     if saveraw is not None and os.path.isdir(saveraw):
         saveraw = os.path.join(saveraw, __version__, str(year), str(term))
         os.makedirs(
@@ -131,10 +134,16 @@ def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5)
                         str.lower("{}_{}.html".format(subj, code))
                     ), "w", encoding="utf-8") as f:
                         f.write(resp)
+                if "" == resp:
+                    out = []
+                    logging.warning("No data for {} {}, {}{}".format(term, year, subj, code))
+                    #@TODO Handle different failure modes
+                else:
+                    logging.info("Got data for {} {}, {}{}".format(term, year, subj, code))
+                    out = list(qt.extract_timetable(resp, year, term, log=True))
+                    logging.info("Parsed data for {} {}, {}{}".format(term, year, subj, code))
                 yield {
-                    "courses": ([] if "" == resp 
-                        else list(qt.extract_timetable(resp, year, term))
-                    ),
+                    "courses": out,
                     "messages": msgs,
                 }
             time.sleep(waittime)
