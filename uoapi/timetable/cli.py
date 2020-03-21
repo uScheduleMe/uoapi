@@ -128,7 +128,20 @@ def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5)
     with tq as gm:
         for i, course in enumerate(courses):
             for subj, code in get_subj_code(course):
-                resp, msgs = tq(year, term, subj, code)
+                try:
+                    resp, msgs = tq(year, term, subj, code)
+                except Exception as e:
+                    logging.error("Failed to query {} {}, {}{}: {}".format(
+                        term, year, subj, code, repr(e)
+                    ))
+                    logging.debug("Failed to query {} {}, {}{}: {}".format(
+                        term, year, subj, code, repr(e)
+                    ), exc_info=True)
+                    resp = ""
+                    msgs = [{
+                        "type": "error",
+                        "message": "Query failure",
+                    }]
                 if saveraw is not None and os.path.isdir(saveraw):
                     with open(os.path.join(saveraw,
                         str.lower("{}_{}.html".format(subj, code))
@@ -140,8 +153,22 @@ def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5)
                     #@TODO Handle different failure modes
                 else:
                     logging.info("Got data for {} {}, {}{}".format(term, year, subj, code))
-                    out = list(qt.extract_timetable(resp, year, term, log=True))
-                    logging.info("Parsed data for {} {}, {}{}".format(term, year, subj, code))
+                    try:
+                        out = list(qt.extract_timetable(resp, year, term, log=True))
+                    except Exception as e:
+                        logging.error("Failed to parse {} {}, {}{}: {}".format(
+                            term, year, subj, code, repr(e)
+                        ))
+                        logging.debug("Failed to parse {} {}, {}{}: {}".format(
+                            term, year, subj, code, repr(e)
+                        ), exc_info=True)
+                        out = []
+                        msgs += {
+                            "type": "error",
+                            "message": "Parser failure",
+                        }
+                    else:
+                        logging.info("Parsed data for {} {}, {}{}".format(term, year, subj, code))
                 yield {
                     "courses": out,
                     "messages": msgs,
