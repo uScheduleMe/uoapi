@@ -117,7 +117,6 @@ def available(retries):
     return out
 
 def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5):
-    tq = qt.TimetableQuery(log=True, retries=retries, refresh=refresh)
     if saveraw is not None and os.path.isdir(saveraw):
         saveraw = os.path.join(saveraw, __version__, str(year), str(term))
         os.makedirs(
@@ -125,6 +124,7 @@ def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5)
             mode=0o770,
             exist_ok=True,
         )
+    tq = qt.TimetableQuery(log=True, retries=retries, refresh=refresh, saveraw=saveraw)
     with tq as gm:
         for i, course in enumerate(courses):
             for subj, code in get_subj_code(course):
@@ -142,11 +142,6 @@ def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5)
                         "type": "error",
                         "message": "Query failure",
                     }]
-                if saveraw is not None and os.path.isdir(saveraw):
-                    with open(os.path.join(saveraw,
-                        str.lower("{}_{}.html".format(subj, code))
-                    ), "w", encoding="utf-8") as f:
-                        f.write(resp)
                 if "" == resp:
                     out = []
                     logging.warning("No data for {} {}, {}{}".format(term, year, subj, code))

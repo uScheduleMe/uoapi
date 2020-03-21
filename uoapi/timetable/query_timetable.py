@@ -116,6 +116,7 @@ class TimetableQuery:
         refresh: int = 10,
         sleeptime: Union[int, float] = 0.5,
         log: bool = False,
+        saveraw: Optional[Union[str, bytes]] = None,
     ):
         if isinstance(form, dict):
             form = dict(form)
@@ -132,6 +133,7 @@ class TimetableQuery:
         self.refresh_after = refresh
         self.sleeptime = sleeptime
         self.log = log
+        self.saveraw = saveraw
         self.__exit__(*[None]*3)
 
     # Setup methods
@@ -304,7 +306,15 @@ class TimetableQuery:
         return self.form
 
     @staticmethod
-    def check_response(response: Union[str, bytes], em: ErrorMessenger):
+    def check_response(response: Union[str, bytes], em: ErrorMessenger, label=""):
+        if self.saveraw is not None and os.path.isdir(self.saveraw) and len(label) > 0:
+            try:
+                with open(os.path.join(self.saveraw,
+                    str.lower("{}.html".format(label))
+                ), "w", encoding="utf-8") as f:
+                    f.write(response)
+            except Exception as e:
+                em("warning", "Saving html failed", exc_info=True)
         response = BeautifulSoup(response, "lxml")
         # Failure modes
         msg = response.find(lambda x: search_tag(
@@ -333,7 +343,11 @@ class TimetableQuery:
     def __call__(self,
         *args, **kwargs
     ) -> Tuple[Union[str, bytes], List[dict]]:
-        em = ErrorMessenger(log=self.log)
+        label = "&".join(
+            ["{}".format(x) for x in args]
+            +["{}={}".format(k, v) for k, v in kwargs.items()]
+        )
+        em = ErrorMessenger(log=self.log, prefix=label)
         if self.refresh_count >= self.refresh_after > 0:
             if self.refresh():
                 self.refresh_count = 0
@@ -371,7 +385,7 @@ class TimetableQuery:
                 self.sleeptime,
             )
             # If `success` is False, don't check response
-            success = success and self.check_response(response.text, em)
+            success = success and self.check_response(response.text, em, label)
         if success:
             return response.text, em.msg_list
         return "", em.msg_list
