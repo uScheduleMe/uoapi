@@ -49,18 +49,22 @@ class ErrorMessenger:
     def __init__(
         self, 
         msg_list: Optional[list] = None, 
+        prefix: str = "",
         log: bool = False, 
         raise_: Optional[Exception]=None,
     ):
         if msg_list is None:
             msg_list = []
         self.msg_list = msg_list
+        self.prefix = prefix
         if log and not isinstance(log, Callable):
             log = logging.log
         self.log = log
         self.raise_ = raise_
 
     def __call__(self, err_type: str, message: str, **kwargs):
+        if len(prefix) > 0:
+            message = "{}: {}".format(self.prefix, message)
         self.msg_list.append({
             "type": err_type,
             "message": message,
@@ -71,7 +75,9 @@ class ErrorMessenger:
         err_type = err_type.strip().upper()
         err_no = getattr(logging, err_type, 10)
         if self.log:
-            self.log(err_no, message, **kwargs)
+            if len(kwargs) > 0:
+                self.log(logging.DEBUG, message, **kwargs)
+            self.log(err_no, message)
         if self.raise_:
             raise self.raise_((err_type, message), kwargs)
 
@@ -242,12 +248,12 @@ class TimetableQuery:
             raise ValueError("Year not valid")
         term = str(term).strip().lower()
         try:
-            term = self.term_to_num[term]
+            semester = self.term_to_num[term]
         except KeyError as e:
             raise ValueError("Term not valid") from e
-        semester = "2" + year[-2:] + term
+        semester = "2" + year[-2:] + semester
         if semester not in self.available:
-            em("warning", "Semester may not be available")
+            em("warning", "Semester may not be available: {}".format(term))
         subject = str(subject).strip().upper()
         number = str(number).strip().upper() 
         if pt.code_re.search((subject + number).upper()) is not None:
@@ -454,8 +460,8 @@ def normalize_whitespace(string):
     return string.strip()
 # Scraping
 
-def extract_section(section, descr, log=False):
-    em = ErrorMessenger(log=log)
+def extract_section(section, descr, log=False, err_msg_prefix=""):
+    em = ErrorMessenger(log=log, prefix=err_msg_prefix)
     section_name = section(section_tag_is_classname)[0].contents
     sec_id, sec_type = section_name[0].strip().upper(), section_name[-1].strip()
     id_, type_ = re.search("\s*([A-Z]+)\s*[0-9]*-\s*([A-Z]+)\s*", sec_id).groups()
@@ -579,6 +585,7 @@ def extract_course(course, year, term, log=False):
             section,
             descr.text.strip() if descr is not None else "",
             log,
+            "{} {}, {subject_code}{course_number}".format(term, year, **course_out),
         )
         course_out["sections"] += sections
         course_out["messages"] += messages
@@ -598,8 +605,9 @@ def distribute_shared_sections(
     sections: List[dict],
     messages: List[dict],
     log: bool = False,
+    err_msg_prefix: str = "",
     ):
-    em = ErrorMessenger(messages, log=log)
+    em = ErrorMessenger(messages, log=log, prefix=err_msg_prefix)
     sec_comps = {}
     for section in sections:
         sec_comps[section["label"]] = []
@@ -649,7 +657,8 @@ def extract_timetable(text, year, term, log=False):
         course["sections"] = distribute_shared_sections(
             course["sections"],
             course["messages"],
-            log
+            log,
+            "{} {}, {subject_code}{course_number}".format(term, year, **course),
         )
         yield course
 
