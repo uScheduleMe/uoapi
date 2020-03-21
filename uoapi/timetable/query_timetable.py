@@ -337,11 +337,7 @@ class TimetableQuery:
         if not self.in_context:
             em("error", "Could not connect to school server")
             return "", em.msg_list
-        with open("/home/ajn/Documents/uoapi/scratch/test2.txt", "a") as f:
-            print(self.refresh_count, self.refresh_after, file=f)
         if self.refresh_count >= self.refresh_after > 0:
-            with open("/home/ajn/Documents/uoapi/scratch/test2.txt", "a") as f:
-                print("Refreshing", file=f)
             if self.refresh():
                 self.refresh_count = 0
             else:
