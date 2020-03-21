@@ -131,12 +131,12 @@ def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5)
                 try:
                     resp, msgs = tq(year, term, subj, code)
                 except Exception as e:
-                    logging.error("Failed to query {} {}, {}{}: {}".format(
-                        term, year, subj, code, repr(e)
-                    ))
                     logging.debug("Failed to query {} {}, {}{}: {}".format(
                         term, year, subj, code, repr(e)
                     ), exc_info=True)
+                    logging.error("Failed to query {} {}, {}{}: {}".format(
+                        term, year, subj, code, repr(e)
+                    ))
                     resp = ""
                     msgs = [{
                         "type": "error",
@@ -156,12 +156,12 @@ def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5)
                     try:
                         out = list(qt.extract_timetable(resp, year, term, log=True))
                     except Exception as e:
-                        logging.error("Failed to parse {} {}, {}{}: {}".format(
-                            term, year, subj, code, repr(e)
-                        ))
                         logging.debug("Failed to parse {} {}, {}{}: {}".format(
                             term, year, subj, code, repr(e)
                         ), exc_info=True)
+                        logging.error("Failed to parse {} {}, {}{}: {}".format(
+                            term, year, subj, code, repr(e)
+                        ))
                         out = []
                         msgs += {
                             "type": "error",
