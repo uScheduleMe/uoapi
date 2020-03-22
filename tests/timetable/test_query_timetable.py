@@ -106,7 +106,7 @@ class TestTimetableQuery(unittest.TestCase):
             self.assertEqual(r, "")
             self.assertIn({
                 "type": "error",
-                "message": "Could not connect to school server",
+                "message": "2020_winter_mat_3121: Could not connect to school server",
             }, m)
         with self.subTest("bad context status code"):
             self.mock_server.status_code = 400
@@ -247,7 +247,7 @@ class TestTimetableQuery(unittest.TestCase):
             messages += gm
             self.assertIn({
                 "type": "error",
-                "message": "Year not valid",
+                "message": "4_winter_mat_3121: Year not valid",
                 "exc_info": True,
             }, messages)
         with self.subTest("bad status code"):
@@ -262,7 +262,7 @@ class TestTimetableQuery(unittest.TestCase):
             messages += gm
             self.assertIn({
                 "type": "error",
-                "message": "POST error: 400",
+                "message": "2020_winter_mat_3121: POST error: 400",
             }, messages)
         with self.subTest("bad response"):
             # Check for unkown errors
@@ -276,7 +276,7 @@ class TestTimetableQuery(unittest.TestCase):
             messages += gm
             self.assertIn({
                 "type": "error",
-                "message": "Unknown error in query response",
+                "message": "2020_winter_mat_3121: Unknown error in query response",
             }, messages)
             # Check for no classes found
             self.mock_server.status_code = 200
@@ -288,8 +288,8 @@ class TestTimetableQuery(unittest.TestCase):
             self.assertEqual(response, "")
             messages += gm
             self.assertIn({
-                "type": "error",
-                "message": "No classes found",
+                "type": "warning",
+                "message": "2020_winter_mat_3121: No classes found",
             }, messages)
             # Check for too many sections found
             self.mock_server.status_code = 200
@@ -302,7 +302,7 @@ class TestTimetableQuery(unittest.TestCase):
             messages += gm
             self.assertIn({
                 "type": "error",
-                "message": "Exceeded maximum number of sections",
+                "message": "2020_winter_mat_3121: Exceeded maximum number of sections",
             }, messages)
         with self.subTest("good response"):
             self.mock_server.status_code = 200
@@ -315,7 +315,7 @@ class TestTimetableQuery(unittest.TestCase):
             messages += gm
             self.assertIn({
                 "type": "success",
-                "message": "POST success",
+                "message": "2020_winter_mat_3121: POST success",
             }, messages)
         with self.subTest("semester not available"):
             self.mock_server.status_code = 200
@@ -328,7 +328,7 @@ class TestTimetableQuery(unittest.TestCase):
             messages += gm
             self.assertIn({
                 "type": "warning",
-                "message": "Semester may not be available",
+                "message": "2020_fall_mat_3120: Semester may not be available: fall",
             }, messages)
         with self.subTest("refresh connection"):
             self.mock_server.status_code = 200
