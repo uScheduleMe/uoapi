@@ -396,7 +396,7 @@ class TimetableQuery:
                 success = success and self.check_response(response.text, em, label)
                 if (success
                     or len(em.msg_list) == 0
-                    or "Unknown error in query response" not in em.msg_list[-1]["message"],
+                    or "Unknown error in query response" not in em.msg_list[-1]["message"]
                 ):
                     logging.debug("; ".join(x["message"] for x in em.msg_list))
                     break
