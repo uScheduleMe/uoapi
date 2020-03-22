@@ -15,10 +15,10 @@ except Exception:
     USE_COLOUR = False
     FORMAT_COLOURS = {
         "CRITICAL": "{}",
-        "ERROR": "{}",
-        "WARNING": "{}",
-        "INFO": "{}",
-        "DEBUG": "{}",
+        "ERROR": "{}   ",
+        "WARNING": "{} ",
+        "INFO": "{}    ",
+        "DEBUG": "{}   ",
     }
 else:
     USE_COLOUR = True
@@ -136,6 +136,8 @@ def configure_logging(args):
             use_colour=use_colour,
         ))
         handlers.append(console)
+    elif len(handlers) == 0:
+        handlers.append(logging.NullHandler())
 
     logging.basicConfig(level=0, handlers=handlers)
 
