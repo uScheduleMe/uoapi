@@ -77,7 +77,7 @@ class ExceptionTracebackFormatter(logging.Formatter):
         return ""
 
 
-def configure_logging(logdir=".", logname="", verbosity=0, use_colour=False):
+def configure_logging(args):
     """
     :param logdir: directory to put logfiles (defaults to ./)
     :param logname: name of logfiles; "log" if not given; 
@@ -89,6 +89,11 @@ def configure_logging(logdir=".", logname="", verbosity=0, use_colour=False):
             "{}->{}".format(k if k != 0 else "default", logging.getLevelName(v))
             for k, v in LOG_LEVELS.items()
     ))
+    logdir = args.logdir
+    logname = args.logname
+    verbosity = args.verbosity if not args.quiet else None
+    use_colour = (not args.monochrome) and args.color
+
     logging.Formatter.converter = time.gmtime
     handlers = []
 
@@ -147,6 +152,11 @@ def configure_parser(parser=None):
             "{}->{}".format(k if k != 0 else "default", logging.getLevelName(v))
             for k, v in LOG_LEVELS.items()
         )
+    )
+    parser.add_argument("-q", "--quiet",
+        action="store_true",
+        default=False,
+        help="Suppress logging output to stderr",
     )
     parser.add_argument("-l", "--logdir",
         action="store",

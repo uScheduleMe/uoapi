@@ -52,9 +52,7 @@ def uoapi_parser():
 
 @make_cli(uoapi_parser)
 def cli(args=None):
-    configure_logging(args.logdir, args.logname,
-        args.verbosity, (not args.monochrome) and args.color,
-    )
+    configure_logging(args)
     args.func(args)
     
 if __name__ == "__main__":
