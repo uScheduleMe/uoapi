@@ -398,6 +398,7 @@ class TimetableQuery:
                     or len(em.msg_list) == 0
                     or "Unknown error in query response" not in em.msg_list[-1]["message"],
                 ):
+                    logging.debug("; ".join(x["message"] for x in em.msg_list))
                     break
                 else:
                     logging.warning(label + ": " + "unknown error, possible stale connection, retrying...")
