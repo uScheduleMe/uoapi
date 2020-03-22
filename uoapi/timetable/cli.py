@@ -42,7 +42,7 @@ def parser(default):
     )
     default.add_argument("courses", 
         action="store",
-        metavar="XXX[0[000]]",
+        metavar="XXX[[<>=?]?0[000]]",
         nargs="*",
         help="list of course codes to query"
     )
@@ -74,6 +74,9 @@ def parser(default):
 
 def get_subj_code(arg):
     arg = arg.strip().upper()
+    match = re.search(r"([A-Z]{3,4})([<>=?][0-9]{4,5})", arg)
+    if match is not None:
+        return [match.groups()]
     match = re.search(r"([A-Z]{3,4})([0-9]{4,5})", arg)
     if match is not None:
         return [match.groups()]

@@ -259,6 +259,8 @@ class TimetableQuery:
             search = "course"
         elif re.search("[A-Z]{3}", subject) and number in "12345":
             search = "subject:year"
+        elif re.search("[A-Z]{3}", subject) and re.search("[<>=?][0-9]{4,5}", number):
+            search = "subject:year:comp"
         #@TODO Add more search formats
         #elif ...:
         #    pass
@@ -289,12 +291,25 @@ class TimetableQuery:
         self.form.pop("UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$chk$0", True)
         self.form.pop("UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$0", True)
         self.form.pop("SSR_CLSRCH_WRK_CATALOG_NBR$0", True)
+        self.form["SSR_CLSRCH_WRK_SSR_EXACT_MATCH1$0"] = "E"
         # Update form and return
         self.form["CLASS_SRCH_WRK2_STRM$35$"] = semester
         self.form["SSR_CLSRCH_WRK_SUBJECT$0"] = subject
+        if "subject:year:comp" == search:
+            comp, number = number[0], number[1:]
+            self.form["SSR_CLSRCH_WRK_SSR_EXACT_MATCH1$0"] = {
+                "<": "T", # less than or equal to `number`
+                ">": "G", # greature than or equal to `number`
+                "?": "C", # contains `number`
+                "=": "E", # is equal to `number`
+            }[comp]
+            self.form["SSR_CLSRCH_WRK_CATALOG_NBR$0"] = number
+            number = number[0]
+            if int(number) >= 5:
+                number = "5"
         if "course" == search:
             self.form["SSR_CLSRCH_WRK_CATALOG_NBR$0"] = number
-        elif "subject:year" == search:
+        elif "subject:year" in search:
             if "5" == number:
                 self.form["UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$chk$0"] = "Y"
                 self.form["UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$0"] = "Y"
