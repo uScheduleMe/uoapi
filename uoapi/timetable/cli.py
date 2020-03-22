@@ -11,11 +11,21 @@ from uoapi import __version__
 from uoapi.cli_tools import make_parser, make_cli
 from uoapi.timetable import query_timetable as qt
 
-description = "A tool for querying the timetables of courses in a term"
-help = ("You can query course codes like `MAT 3143`, "
+help = "A tool for querying the timetables of courses in a term"
+description = ("You can query course codes like `MAT 3143`, "
     + "subjects at a level like `MAT3` "
     + "(write `XXX5` for graduate courses in subject `XXX`), "
-    + "and subjects like `MAT`."
+    + "and subjects like `MAT`.\n"
+    + "If you're searching for a subject at a level like `PHY1`"
+    + " which has many sections, and may exceed the limit,"
+    + " you can search with `PHY<1300` and `PHY>1300`, which searches for"
+    + " first-year physics courses with codes less than or equal to,"
+    + " and greater than or equal to respectively."
+    + " This splits up the search space, "
+    + "allowing more results to be returned."
+    + " Other such options include `PHY=1300`, which is equivalent to"
+    + " `PHY1300', and `PHY?41`, which searches for physics courses"
+    + " containing `41` in the course code."
 )
 epilog = ""
 

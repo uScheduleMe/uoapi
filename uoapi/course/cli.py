@@ -6,10 +6,10 @@ import argparse
 from uoapi.cli_tools import make_parser, make_cli
 from uoapi.course import scrape_subjects, get_courses
 
-description = ("A tool for querying the subjects available, "
+help = ("A tool for querying the subjects available, "
     + "and the courses offered for each subject"
 )
-help = ("By default, lookup the subject table. "
+description = ("By default, lookup the subject table. "
     + "If given the --courses (-c) flag, lookup course information as well. "
     + "Suppress the subjects table with --nosubjects (-s). "
     + "If subject codes are given as command line arguments, "

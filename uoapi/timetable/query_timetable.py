@@ -305,7 +305,11 @@ class TimetableQuery:
             }[comp]
             self.form["SSR_CLSRCH_WRK_CATALOG_NBR$0"] = number
             number = number[0]
-            if int(number) >= 5:
+            if comp == "?":
+                search = "" # Prevent the fall-through restricting the year/level
+            # Otherwise, fall through and restrict to the year given by
+            # the first digit of `number`.
+            elif int(number) >= 5:
                 number = "5"
         if "course" == search:
             self.form["SSR_CLSRCH_WRK_CATALOG_NBR$0"] = number
