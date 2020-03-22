@@ -348,9 +348,9 @@ class TimetableQuery:
     def __call__(self,
         *args, **kwargs
     ) -> Tuple[Union[str, bytes], List[dict]]:
-        label = "&".join(
+        label = "_".join(
             ["{}".format(x) for x in args]
-            +["{}={}".format(k, v) for k, v in kwargs.items()]
+            +["{}-{}".format(k, v) for k, v in kwargs.items()]
         )
         em = ErrorMessenger(log=self.log, prefix=label)
         if self.refresh_count >= self.refresh_after > 0:
