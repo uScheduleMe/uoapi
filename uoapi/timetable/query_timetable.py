@@ -311,8 +311,7 @@ class TimetableQuery:
         #    pass
         return self.form
 
-    @staticmethod
-    def check_response(response: Union[str, bytes], em: ErrorMessenger, label=""):
+    def check_response(self, response: Union[str, bytes], em: ErrorMessenger, label=""):
         if self.saveraw is not None and os.path.isdir(self.saveraw) and len(label) > 0:
             try:
                 with open(os.path.join(self.saveraw,

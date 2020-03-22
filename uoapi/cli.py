@@ -5,6 +5,7 @@ import functools as ft
 from importlib import import_module
 
 from uoapi.cli_tools import absolute_path, default_parser, noop, make_cli
+from uoapi.log_config import configure_parser, configure_logging
 
 
 ###############################################################################
@@ -25,12 +26,7 @@ def uoapi_parser():
     parser = argparse.ArgumentParser()
     
     # Global arguments
-    parser.add_argument("-v", "--verbose",
-       help="Increase verbosity",
-    )
-    parser.add_argument("-l", "--log",
-       help="Log to this file"
-    )
+    parser = configure_parser(parser)
     parser.set_defaults(func=noop)
     
     # Add subparsers
@@ -56,6 +52,9 @@ def uoapi_parser():
 
 @make_cli(uoapi_parser)
 def cli(args=None):
+    configure_logging(args.logdir, args.logname,
+        args.verbosity, (not args.monochrome) and args.color,
+    )
     args.func(args)
     
 if __name__ == "__main__":

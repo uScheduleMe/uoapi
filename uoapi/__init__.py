@@ -2,6 +2,7 @@ import importlib
 import os
 
 from . import cli_tools
+from . import log_config
 from .__version__ import __version__
 
 with open(cli_tools.absolute_path("__modules__"), "r") as f:
