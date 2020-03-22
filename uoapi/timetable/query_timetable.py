@@ -325,9 +325,14 @@ class TimetableQuery:
         msg = response.find(lambda x: search_tag(
             x, "span", "id", "DERIVED_CLSMSG_ERROR_TEXT"
         ))
+        # In some cases, this object is a field instead of a span
+        if msg is None:
+            msg = response.find(lambda x: search_tag(
+                x, "field", "id", "DERIVED_CLSMSG_ERROR_TEXT"
+            ))
         if msg is not None:
             msg = msg.contents[0].strip().lower()
-            if msg == "no classes found":
+            if "no classes found" in msg:
                 em("warning", "No classes found")
                 return False
             elif any(x in msg for x in "exceed maximum limit".split()):
