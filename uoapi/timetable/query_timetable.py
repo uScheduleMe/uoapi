@@ -149,7 +149,6 @@ class TimetableQuery:
             raise Exception("Cannot enter this context manager if already successfully entered")
         self.session = requests.Session()
         self.messages = messages = []
-        self.refresh_count = 0
         self.in_context = True
         if not self.refresh():
             self.__exit__(*[None]*3)
@@ -160,7 +159,6 @@ class TimetableQuery:
             self.session.close()
         self.session = self.messages = None
         self.available = {}
-        self.refresh_count = 0
         self.in_context = False
 
     @require_context
@@ -191,6 +189,7 @@ class TimetableQuery:
         if len(self.available) == 0:
             em("warning", "Found no available terms to search")
         #@TODO Randomize user-agent?
+        self.refresh_count = 0
         return True
 
     @staticmethod
@@ -359,16 +358,13 @@ class TimetableQuery:
         )
         em = ErrorMessenger(log=self.log, prefix=label)
         if self.refresh_count >= self.refresh_after > 0:
-            if self.refresh():
-                self.refresh_count = 0
-            else:
+            if not self.refresh():
                 self.__exit__(*[None]*3)
                 # In this case, `self.in_context` will be `False`,
                 # so exit will be handled by clause below.
         if not self.in_context:
             em("error", "Could not connect to school server")
             return "", em.msg_list
-        self.refresh_count += 1
         # We raise exceptions in format_form instead of using
         # the ErrorMessenger since we want to short-circuit
         # this method if it fails (`success = False`).
@@ -382,20 +378,30 @@ class TimetableQuery:
             )
             success = False
         else:
-            success, response = make_request(
-                self.session.post,
-                em,
-                [self.orig_link,],
-                {
-                    "data": self.form,
-                    "headers": self.default_headers,
-                    "allow_redirects": True,
-                },
-                self.retries,
-                self.sleeptime,
-            )
-            # If `success` is False, don't check response
-            success = success and self.check_response(response.text, em, label)
+            for i in range(self.retries):
+                self.refresh_count += 1
+                success, response = make_request(
+                    self.session.post,
+                    em,
+                    [self.orig_link,],
+                    {
+                        "data": self.form,
+                        "headers": self.default_headers,
+                        "allow_redirects": True,
+                    },
+                    self.retries,
+                    self.sleeptime,
+                )
+                # If `success` is False, don't check response
+                success = success and self.check_response(response.text, em, label)
+                if (success
+                    or len(em.msg_list) == 0
+                    or "Unknown error in query response" not in em.msg_list[-1]["message"],
+                ):
+                    break
+                else:
+                    logging.warning(label + ": " + "unknown error, possible stale connection, retrying...")
+                    self.refresh()
         if success:
             return response.text, em.msg_list
         return "", em.msg_list
