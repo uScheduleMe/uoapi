@@ -63,7 +63,7 @@ class ErrorMessenger:
         self.raise_ = raise_
 
     def __call__(self, err_type: str, message: str, **kwargs):
-        if len(prefix) > 0:
+        if len(self.prefix) > 0:
             message = "{}: {}".format(self.prefix, message)
         self.msg_list.append({
             "type": err_type,
