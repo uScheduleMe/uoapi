@@ -463,7 +463,7 @@ def extract_section(section, descr, log=False, err_msg_prefix=""):
     em = ErrorMessenger(log=log, prefix=err_msg_prefix)
     section_name = section(section_tag_is_classname)[0].contents
     sec_id, sec_type = section_name[0].strip().upper(), section_name[-1].strip()
-    id_, type_ = re.search("\s*([A-Z]+)\s*[0-9]*-\s*([A-Z]+)\s*", sec_id).groups()
+    id_, type_ = re.search("\s*([A-Z]*)\s*[0-9]*-\s*([A-Z]+)\s*", sec_id).groups()
     status = section(lambda x: 
         search_tag(
             x, "div", "id", "win0divDERIVED_CLSRCH_SSR_STATUS_LONG"
