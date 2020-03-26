@@ -8,18 +8,19 @@ import json
 
 from copy import copy
 
+FORMAT_NO_COLOURS = {
+    "CRITICAL":"CRITICAL",
+    "ERROR":"ERROR   ",
+    "WARNING":"WARNING ",
+    "INFO":"INFO    ",
+    "DEBUG":"DEBUG   ",
+}
 try:
     import colorama
     colorama.init()
 except Exception:
     USE_COLOUR = False
-    FORMAT_COLOURS = {
-        "CRITICAL": "{}",
-        "ERROR": "{}   ",
-        "WARNING": "{} ",
-        "INFO": "{}    ",
-        "DEBUG": "{}   ",
-    }
+    FORMAT_COLOURS = FORMAT_NO_COLOURS
 else:
     USE_COLOUR = True
     FORMAT_COLOURS = {
@@ -51,9 +52,17 @@ class ColouredFormatter(logging.Formatter):
 
     def format(self, record):
         record = copy(record)
-        if self.use_colour and record.levelname in FORMAT_COLOURS:
-            record.levelname = FORMAT_COLOURS[record.levelname]
-        return super().format(record)
+        if record.levelname in FORMAT_COLOURS:
+            if self.use_colour:
+                record.levelname = FORMAT_COLOURS[record.levelname]
+            else:
+                record.levelname = FORMAT_NO_COLOURS[record.levelname]
+        record = super().format(record)
+        if self.use_colour:
+            asctime, record = record.split("::", 1)
+            asctime = colorama.Fore.CYAN + asctime + colorama.Fore.RESET
+            record = asctime + "::" + record
+        return record
 
 class ExceptionTracebackFormatter(logging.Formatter):
 
@@ -199,7 +208,5 @@ def main():
 
 if __name__ == "__main__":
     args = configure_parser().parse_args()
-    configure_logging(args.logdir, args.logname, 
-        args.verbosity, (not args.monochrome) and args.color
-    )
+    configure_logging(args)
     main()
