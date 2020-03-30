@@ -178,7 +178,7 @@ def main(courses, year, term, saveraw=None, refresh=5, retries=2, waittime=2):
                     else:
                         logging.info("Parsed data for {} {}, {}{}".format(term, year, subj, code))
                 yield {
-                    "courses": out,
+                    "timetables": out,
                     "messages": msgs,
                 }
             time.sleep(waittime)
