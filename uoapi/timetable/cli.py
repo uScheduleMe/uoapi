@@ -65,7 +65,7 @@ def parser(default):
     default.add_argument("-w", "--waittime",
         action="store",
         type=float,
-        default=0.5,
+        default=2,
         help="specify time (in seconds) to wait between requests",
     )
     default.add_argument("-f", "--refresh",
@@ -129,7 +129,7 @@ def available(retries):
     out["messages"] = gm
     return out
 
-def main(courses, year, term, saveraw=None, refresh=10, retries=2, waittime=0.5):
+def main(courses, year, term, saveraw=None, refresh=5, retries=2, waittime=2):
     if saveraw is not None and os.path.isdir(saveraw):
         saveraw = os.path.join(saveraw, __version__, str(year), str(term))
         os.makedirs(

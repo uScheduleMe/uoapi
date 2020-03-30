@@ -98,7 +98,7 @@ def make_request(
         messager("error", "%s error: %i" % (r.request.method, r.status_code))
         time.sleep(sleeptime)
     return False, r
-        
+
 def require_context(method):
     @wraps(method)
     def new_method(self, *args, **kwargs):
@@ -119,8 +119,8 @@ class TimetableQuery:
         term_to_num: dict = term_to_num,
         default_headers: dict = default_headers,
         retries: int = 2,
-        refresh: int = 10,
-        sleeptime: Union[int, float] = 0.5,
+        refresh: int = 5,
+        sleeptime: Union[int, float] = 1,
         log: bool = False,
         saveraw: Optional[Union[str, bytes]] = None,
     ):
@@ -446,7 +446,7 @@ def group_by_eq(seq, equalizer):
             equiv_classes[eq] = []
         equiv_classes[eq].append(elt)
     return equiv_classes
-    
+
 def search_tag(tag, tag_name, attribute, 
                string, matcher=(lambda x,y: re.search(x, y) is not None)):
     try:
@@ -488,6 +488,7 @@ def normalize_whitespace(string):
     string = string.replace('\xa0', ' ')
     string = string.replace('&nbsp;', ' ')
     return string.strip()
+
 # Scraping
 
 def extract_section(section, descr, log=False, err_msg_prefix=""):
