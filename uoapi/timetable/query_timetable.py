@@ -587,13 +587,13 @@ def extract_section(section, descr, log=False, err_msg_prefix=""):
 
 def extract_course(course, year, term, log=False):
     title = course(course_tag_is_title)[0].text
-    subject_code, course_number = pt.code_re.search(
+    subject_code, course_code = pt.code_re.search(
         title,
     ).group().split()
     title = pt.code_re.sub("", title).strip().strip("-").strip()
     course_out = {
         "subject_code": subject_code.strip().upper(),
-        "course_number": course_number.strip().upper(),
+        "course_code": course_code.strip().upper(),
         "course_name": normalize_whitespace(title),
         "sections": [],
         "messages": [],
@@ -616,7 +616,7 @@ def extract_course(course, year, term, log=False):
             section,
             descr.text.strip() if descr is not None else "",
             log,
-            "{} {}, {subject_code}{course_number}".format(term, year, **course_out),
+            "{} {}, {subject_code}{course_code}".format(term, year, **course_out),
         )
         course_out["sections"] += sections
         course_out["messages"] += messages
@@ -689,7 +689,7 @@ def extract_timetable(text, year, term, log=False):
             course["sections"],
             course["messages"],
             log,
-            "{} {}, {subject_code}{course_number}".format(term, year, **course),
+            "{} {}, {subject_code}{course_code}".format(term, year, **course),
         )
         yield course
 
