@@ -160,6 +160,7 @@ class TimetableQuery:
         self.session = self.messages = None
         self.available = {}
         self.in_context = False
+        self.refresh_count = -1
 
     @require_context
     def refresh(self):
