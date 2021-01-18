@@ -38,8 +38,13 @@ term_to_num = (
     ("winter","1"),
     ("9", "9"),
     ("5", "5"),
-    ("1","1"),
+    ("1", "1"),
 )
+num_to_term = dict((
+    ("9", "fall"),
+    ("5", "summer"),
+    ("1", "winter"),
+))
 default_headers = (('Content-Type', "application/x-www-form-urlencoded"),)
 
 # Utilities
@@ -491,6 +496,21 @@ def normalize_whitespace(string):
     return string.strip()
 
 # Scraping
+
+def parse_available(s):
+    s = s.strip().lower()
+    assert len(s) == 4
+    s = s[1:]
+    try:
+        year = "20" + s[:2]
+        assert len(year) == 4
+        return {
+            "year": int(year),
+            "term": num_to_term[s[2:]],
+        }
+    except Exception:
+        return None
+
 
 def extract_section(section, descr, log=False, err_msg_prefix=""):
     em = ErrorMessenger(log=log, prefix=err_msg_prefix)

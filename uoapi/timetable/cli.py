@@ -122,10 +122,14 @@ def cli(args=None):
         ):
             print(json.dumps(out))
 
-def available(retries):
+def available(retries=2):
     tq = qt.TimetableQuery(retries=retries)
     with tq as gm:
-        out = {"available": list(tq.available.values())}
+        out = {"available": [
+            at
+            for at in map(qt.parse_available, tq.available.keys())
+            if at is not None
+        ]}
     out["messages"] = gm
     return out
 

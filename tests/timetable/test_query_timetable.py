@@ -6,6 +6,7 @@ import regex as re
 from httmock import urlmatch, HTTMock
 
 import uoapi.timetable.query_timetable as qt
+from uoapi.timetable import available
 
 #@TODO Test accented characters on various systems
 # e.g. accented characters/encoding caused tests to
@@ -273,6 +274,19 @@ class TestTimetableQuery(unittest.TestCase):
                 )
             self.assertNotIn("UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$chk$0", self.tq.form)
             self.assertNotIn("UO_PUB_SRCH_WRK_GRADUATED_TBL_CD$0", self.tq.form)
+
+    def test_available_terms(self):
+        self.mock_server.status_code = 200
+        self.mock_server.swap_responses("GET", "good")
+        with HTTMock(self.mock_server.http_response):
+            self.assertEqual(
+                available()["available"],
+                [{
+                    "year": 2020,
+                    "term": "winter",
+                }]
+            )
+
 
     def test_call(self):
         with self.subTest("bad input"):
