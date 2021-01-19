@@ -2,7 +2,6 @@
 
 [![Build shield](https://img.shields.io/github/workflow/status/andrewnags/uoapi/build)](https://github.com/andrewnags/uoapi/actions?query=workflow%3Abuild)
 [![Tags](https://img.shields.io/github/v/tag/andrewnags/uoapi)](https://github.com/andrewnags/uoapi/releases)
-![License shield](https://img.shields.io/github/license/andrewnags/uoapi)
 
 ### Installation
 
