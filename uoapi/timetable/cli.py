@@ -122,12 +122,28 @@ def cli(args=None):
         ):
             print(json.dumps(out))
 
-def available(retries):
-    tq = qt.TimetableQuery(retries=retries)
-    with tq as gm:
-        out = {"available": list(tq.available.values())}
-    out["messages"] = gm
-    return out
+def available(retries=2):
+    try:
+        tq = qt.TimetableQuery(retries=retries)
+        with tq as gm:
+            out = {"available": [
+                available_terms
+                # Map the function which parses uOttawa term codes
+                # across the sequence of codes (the keys in `tq.available`).
+                for available_terms in map(qt.parse_available, tq.available.keys())
+                # Filter out the codes which failed to parse.
+                if available_terms is not None
+            ]}
+        out["messages"] = gm
+        return out
+    except Exception as e:
+        return {
+            "available": [],
+            "messages": [{
+                "type": "error",
+                "message": "Unknown failure: {} = {}".format(type(e), e),
+            }],
+        }
 
 def main(courses, year, term, saveraw=None, refresh=5, retries=2, waittime=2):
     if saveraw is not None and os.path.isdir(saveraw):

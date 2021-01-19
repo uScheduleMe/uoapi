@@ -9,3 +9,4 @@ src/*/uoapi.py
 *.vscode
 *.vscode/*
 *.egg*
+tags
