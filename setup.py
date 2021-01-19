@@ -2,12 +2,10 @@
 
 import io
 import os
-import sys
 import re
 
-from setuptools import find_packages, setup, Command
+from setuptools import find_packages, setup
 
-#from uoapi import __version__
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -18,9 +16,12 @@ URL = 'https://github.com/andrewnags/uoapi'
 EMAIL = 'anaga042@uottawa.ca'
 AUTHOR = 'Andrew Nagarajah'
 REQUIRES_PYTHON = '>=3.6.0'
-#VERSION = __version__
-with io.open(os.path.join(here, "uoapi", "__version__.py")) as f:
-    VERSION = re.search("__version__\\s*=\\s*['\"]([^'\"]+)['\"]", f.read()).groups()[0].strip()
+with io.open(os.path.join(here, "src/uoapi", "__version__.py")) as f:
+    m = re.search("__version__\\s*=\\s*['\"]([^'\"]+)['\"]", f.read())
+    if m:
+        VERSION = m.groups()[0].strip()
+    else:
+        raise ValueError('Version is not properly configured')
 
 # What packages are required for this module to be executed?
 REQUIRED = [
@@ -29,17 +30,9 @@ REQUIRED = [
 
 # What packages are optional?
 EXTRAS = {
-    # 'fancy feature': ['django'],
+    'tests': ['pytest', 'pytest-cov', 'httmock'],
 }
 
-# The rest you shouldn't have to touch too much :)
-# ------------------------------------------------
-# Except, perhaps the License and Trove Classifiers!
-# If you do change the License, remember to change the Trove Classifier for that!
-
-
-# Import the README and use it as the long-description.
-# Note: this will only work if 'README.md' is present in your MANIFEST.in file!
 try:
     with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
         long_description = '\n' + f.read()
@@ -48,17 +41,7 @@ except FileNotFoundError:
 
 # Load the package's __version__.py module as a dictionary.
 about = {}
-#if not VERSION:
-#    project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
-#    with open(os.path.join(here, project_slug, '__version__.py')) as f:
-#        exec(f.read(), about)
-#else:
-#    about['__version__'] = VERSION
 about['__version__'] = VERSION
-
-# Find modules
-with open(os.path.join("uoapi", "__modules__"), "r") as f:
-    modules = ["uoapi"] + ["uoapi." + x.strip() for x in f.readlines()]
 
 
 # Where the magic happens:
@@ -72,17 +55,8 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=modules,
-    #packages=find_packages(
-    #    #exclude=["tests", "*.tests", "*.tests.*", "tests.*"],
-    #),
-    package_dir={"uoapi": "uoapi"},
-    package_data = {"uoapi": ["__modules__"]
-        + [os.path.join(mod, "data", "*") for mod in modules]
-    },
-    # If your package is a single module, use this instead of 'packages':
-    # py_modules=['mypackage'],
-
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
     entry_points={
         'console_scripts': ['uoapi=uoapi.cli:cli'],
     },
@@ -105,6 +79,9 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Education',
         'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
