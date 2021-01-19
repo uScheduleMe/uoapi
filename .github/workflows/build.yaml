@@ -20,7 +20,7 @@ jobs:
         run: pip install --upgrade pip
 
       - name: Install dependencies and script
-        run: pip install -r requirements.txt -r test-requirements.txt -e .
+        run: pip install -e . pytest pytest-cov httmock
 
       # Skipping linting and type checking for now...
       # - name: Lint with flake8
