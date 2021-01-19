@@ -497,20 +497,23 @@ def normalize_whitespace(string):
 
 # Scraping
 
+def _fail_value(fail, message):
+    if fail:
+        raise ValueError(message)
+
 def parse_available(s):
     s = s.strip().lower()
-    assert len(s) == 4
+    _fail_value(len(s) != 4, "The term code should be 4 digits long")
     s = s[1:]
     try:
         year = "20" + s[:2]
-        assert len(year) == 4
+        _fail_value(len(year) != 4, "The year should have 4 digits")
         return {
             "year": int(year),
             "term": num_to_term[s[2:]],
         }
     except Exception:
         return None
-
 
 def extract_section(section, descr, log=False, err_msg_prefix=""):
     em = ErrorMessenger(log=log, prefix=err_msg_prefix)

@@ -127,9 +127,12 @@ def available(retries=2):
         tq = qt.TimetableQuery(retries=retries)
         with tq as gm:
             out = {"available": [
-                at
-                for at in map(qt.parse_available, tq.available.keys())
-                if at is not None
+                available_terms
+                # Map the function which parses uOttawa term codes
+                # across the sequence of codes (the keys in `tq.available`).
+                for available_terms in map(qt.parse_available, tq.available.keys())
+                # Filter out the codes which failed to parse.
+                if available_terms is not None
             ]}
         out["messages"] = gm
         return out
