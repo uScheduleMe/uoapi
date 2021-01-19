@@ -1,13 +1,21 @@
 name: build
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - '**.py'
+      - 'MANIFEST.in'
+      - 'setup.cfg'
+      - '**.yaml'
+  pull_request:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python: ['3.6', '3.7', '3.8', '3.9']
+        os: [ubuntu-latest, windows-latest, macos-latest]
     name: Testing uoapi with python ${{ matrix.python }}
     steps:
       - uses: actions/checkout@v2
