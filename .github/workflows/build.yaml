@@ -4,7 +4,6 @@ on: [push]
 
 jobs:
   build:
-    needs: version-check
     runs-on: ubuntu-latest
     strategy:
       matrix:
