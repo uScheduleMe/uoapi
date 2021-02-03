@@ -1,2 +1,1 @@
-include uoapi/__modules__
-include uoapi/*/data/*
+graft src

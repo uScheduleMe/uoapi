@@ -24,11 +24,11 @@ with open(absolute_path("__modules__"), "r") as f:
 
 def uoapi_parser():
     parser = argparse.ArgumentParser()
-    
+
     # Global arguments
     parser = configure_parser(parser)
     parser.set_defaults(func=noop)
-    
+
     # Add subparsers
     subparsers = parser.add_subparsers(title="actions")
     for name in modules:
@@ -54,6 +54,6 @@ def uoapi_parser():
 def cli(args=None):
     configure_logging(args)
     args.func(args)
-    
+
 if __name__ == "__main__":
     cli()

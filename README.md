@@ -1,3 +1,8 @@
+# uO API
+
+[![Build shield](https://img.shields.io/github/workflow/status/andrewnags/uoapi/build)](https://github.com/andrewnags/uoapi/actions?query=workflow%3Abuild)
+[![Tags](https://img.shields.io/github/v/tag/andrewnags/uoapi)](https://github.com/andrewnags/uoapi/releases)
+
 ### Installation
 
 At the moment, this project is still in development,
@@ -34,6 +39,6 @@ GNU LGPLv3.0
 
 See the `COPYING` and `COPYING.LESSER` files for the exact license.
 
-Generally speaking, LGPL permits use, distribution, and alteration in open source (as long as the licence is propagated), 
+Generally speaking, LGPL permits use, distribution, and alteration in open source (as long as the licence is propagated),
 and permits use and distribution in closed source projects
 (this is **not** legal advice, just my best personal summary).

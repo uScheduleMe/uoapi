@@ -1,0 +1,40 @@
+name: build
+
+on:
+  push:
+    paths:
+      - '**.py'
+      - 'MANIFEST.in'
+      - 'setup.cfg'
+      - '**.yaml'
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python: ['3.6', '3.7', '3.8', '3.9']
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    name: Testing uoapi with python ${{ matrix.python }} on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Ensure latest pip
+        run: pip install --upgrade pip
+
+      - name: Install dependencies and script
+        run: pip install -e . pytest pytest-cov httmock
+
+      # Skipping linting and type checking for now...
+      # - name: Lint with flake8
+      #   run: flake8
+      # - name: Run static type analyzer
+      #  run: mypy
+
+      - name: Test with pytest
+        run: pytest tests/
