@@ -2,13 +2,10 @@ import sys
 
 from bs4 import BeautifulSoup
 from typing import (
-    Any,
     Callable,
-    Dict,
-    TypeVar
-)
-from re import (
-    Match
+    List,
+    TypeVar,
+    cast
 )
 
 import requests
@@ -16,6 +13,15 @@ import regex as re
 
 from uoapi.course import patterns as pt
 from uoapi.course import Prereq
+
+try:
+    from re import (
+        Match
+    )
+except ImportError:
+    # https://github.com/python/cpython/blob/4bb332cfd1f9740b1e31d2d8b8bf1bedca3439ff/Lib/re.py#L272
+    import sre_compile as _sre
+    Match = type(_sre.compile('', 0).match(''))
 
 # requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':DES-CBC3-SHA'
 # timetable_url = 'https://web30.uottawa.ca/v3/SITS/timetable/Search.aspx'
@@ -49,31 +55,33 @@ def _extract_credits(string):
     (Assuming the string is the title of a course)
     Used in get_subjects.ipynb
     '''
-    credits = __perform_extraction(
+    return __perform_extraction(
         string,
         extracting_fn=lambda x: int(
-            x.group(0)
+            cast(str, x.group(0))
             .split(' ')[0]
             .strip('(')
         ),
         validating_fn=lambda x: len(x) == 1,
         default=[0]
     )
-    if len(credits) == 1:
-        return credits
-    return [0]
 
 
 def __perform_extraction(
     string: str,
     extracting_fn: Callable[[Match], T],
-    validating_fn: Callable[[Dict[T]], bool],
+    validating_fn: Callable[[List[T]], bool],
     default: T,
 ):
-    return list({
+    ret = list({
         extracting_fn(x)
         for x in re.finditer(pt.credit_re, string)
     })
+
+    if validating_fn(ret):
+        return ret
+
+    return [default]
 
 
 def scrape_subjects(url: str = course_url):
@@ -101,7 +109,8 @@ def scrape_subjects(url: str = course_url):
 # @TODO break up into subfunctions
 def get_courses(link):
     '''
-    Scrapes the page given by link for courses and their descriptions, components, prerequisites, etc.
+    Scrapes the page given by link for courses and their
+    descriptions, components, prerequisites, etc.
     '''
     raw_courses = BeautifulSoup(requests.get(link).text, 'html.parser')
     raw_courses = raw_courses.find_all('div', attrs={'class': 'courseblock'})
