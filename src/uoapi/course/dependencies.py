@@ -16,7 +16,7 @@ class DependencyNode(Generic[T]):
         self,
         children: Optional[List["DependencyNode[T]"]] = None
     ):
-        if children:
+        if children is not None:
             self.children = children
         else:
             self.children = []
