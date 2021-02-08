@@ -49,7 +49,7 @@ def _extract_codes(string: str) -> List[str]:
     )
 
 
-def _extract_credits(string):
+def _extract_credits(string: str) -> List[int]:
     '''
     Searches string for a number of credits/units
     (Assuming the string is the title of a course)
