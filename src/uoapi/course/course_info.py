@@ -36,7 +36,7 @@ T = TypeVar('T')
 #############################################################################
 
 
-def _extract_codes(string: str, return_all: bool = True):
+def _extract_codes(string: str) -> List[str]:
     '''
     Returns course codes found in string;
     if multiple codes are found and return_all is False, then returns an invalid code
