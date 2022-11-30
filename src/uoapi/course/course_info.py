@@ -40,7 +40,8 @@ def _extract_codes(string: str) -> List[str]:
     '''
     Returns course codes found in string;
     if multiple codes are found and return_all is False, then returns an invalid code
-    Used in get_subjects.ipynb '''
+    Used in get_subjects.ipynb
+    '''
     return __perform_extraction(
         string,
         extracting_fn=lambda x: x.group(0),
