@@ -143,3 +143,5 @@ cython_debug/
 # ctags/etags
 tags
 TAGS
+
+.vscode/
