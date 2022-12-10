@@ -15,7 +15,7 @@ DESCRIPTION = "An API for retrieving public data from the University of Ottawa."
 URL = "https://github.com/andrewnags/uoapi"
 EMAIL = "anaga042@uottawa.ca"
 AUTHOR = "Andrew Nagarajah"
-REQUIRES_PYTHON = ">=3.6.0"
+REQUIRES_PYTHON = ">=3.10.0"
 with io.open(os.path.join(here, "src/uoapi", "__version__.py")) as f:
     m = re.search("__version__\\s*=\\s*['\"]([^'\"]+)['\"]", f.read())
     if m:
