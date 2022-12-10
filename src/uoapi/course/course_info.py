@@ -20,7 +20,7 @@ course_url = "https://catalogue.uottawa.ca/en/courses/"
 #############################################################################
 
 
-def _extract_codes(string, return_all=True):
+def _extract_codes(string: str, return_all: bool = True):
     """
     Returns course codes found in string;
     if multiple codes are found and return_all is False, then returns an invalid code
@@ -31,7 +31,7 @@ def _extract_codes(string, return_all=True):
     return "XXX 0000"
 
 
-def _extract_credits(string):
+def _extract_credits(string: str):
     """
     Searches string for a number of credits/units
     (Assuming the string is the title of a course)
@@ -48,7 +48,7 @@ def _extract_credits(string):
     return [0]
 
 
-def scrape_subjects(url=course_url):
+def scrape_subjects(url: str = course_url):
     """
     Scrapes the list of subjects with links to their respective course catalogues from the uOttawa website
     () -> pandas DataFrame with columns: Subject, Code, Link
@@ -83,7 +83,7 @@ def scrape_subjects(url=course_url):
 
 
 # @TODO break up into subfunctions
-def get_courses(link):
+def get_courses(link: str):
     """
     Scrapes the page given by link for courses and their descriptions, components, prerequisites, etc.
     """
