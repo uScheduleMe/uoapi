@@ -44,6 +44,7 @@ EXTRAS = {
         "flake8",
         "black",
         "bandit",
+        "types-requests",
     ],
 }
 

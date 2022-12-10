@@ -1,0 +1,119 @@
+import sys
+
+from bs4 import (
+    Tag,
+    NavigableString,
+)
+
+from uoapi.course import (
+    utils,
+    patterns as pt,
+)
+from uoapi.course.models import (
+    Subject,
+)
+
+from typing import (
+    cast,
+)
+
+
+def title_tag(tag: Tag | NavigableString) -> tuple[str, str, int]:
+    """
+    Extracts course code, title, and credits from a courseblocktitle tag
+    """
+    title = tag.text.replace("\xa0", " ").strip()
+    title = title.replace("&nbsp;", " ").strip()
+
+    code = utils.extract_codes(title, False)[0]
+    title = utils.remove_codes(title)
+
+    credits = utils.extract_credits(title)
+    title = utils.remove_credits(title)
+
+    if (course_match := pt.code_groups.search(code)) is None:
+        raise ValueError(f"Could not parse course code {code}")
+
+    code = cast(str, course_match.groups()[1]).upper()
+
+    return code, title, credits
+
+
+def description_tag(tag: Tag | NavigableString | None) -> str:
+    """
+    Extracts the description of a course from a courseblockdesc tag
+    """
+    if tag is None:
+        return ""
+
+    description = tag.text.replace("\xa0", " ").strip()
+    return description
+
+
+def subject_tag(tag: Tag, url_prefix: str):
+    if not tag.has_attr("href"):
+        # TODO: Add log message here or crash
+        return None
+
+    match tag.string, tag["href"]:
+        case str(label), str(href):
+            path = utils.get_last_path_component(href)
+            subject = utils.clean_subject_label(label)
+            subject_code = path.upper()
+
+            return Subject(
+                subject=subject,
+                subject_code=subject_code,
+                link=url_prefix + path + "/",  # pyright: ignore
+            )
+        case s, h:
+            raise ValueError(f"Expected strings, got {type(s)} and {type(h)}")
+
+
+def extras_blocks(tags: list[Tag]) -> tuple[str, str]:
+    """
+    Extracts the prerequisites and components
+    from a list of courseblockextra tags
+    """
+    blocks: list[str] = []
+
+    for tag in tags:
+        match tag:
+            case Tag():  # type: ignore
+                blocks.append(
+                    tag.text.replace("\xa0", " ")
+                    .strip()
+                    .strip(".")
+                    .replace("&nbsp;", " ")
+                    .strip()
+                    .strip(".")
+                )
+            case _:
+                print(tag, file=sys.stderr)
+                raise ValueError(f"Unexpected type in tag {tag}")
+
+    match blocks:
+        case [block] if utils.has_component(block):
+            return "", block
+        case [block] if utils.has_prerequisite(block):
+            return block, ""
+        case [block]:
+            return "", ""
+        case []:
+            return "", ""
+        case [block, _] if utils.is_prerequisite_string(block):
+            prerequisites = block
+        case [_, block] if utils.is_prerequisite_string(block):
+            prerequisites = block
+        case _:
+            prerequisites = ""
+
+    match blocks:
+        case [block, _] if utils.is_component_string(block):
+            components = block
+        case [_, block] if utils.is_component_string(block):
+            components = block
+        case _:
+            components = ""
+
+    return prerequisites, components

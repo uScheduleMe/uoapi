@@ -1,16 +1,19 @@
-import sys
-
 import requests
-from bs4 import BeautifulSoup
+from bs4 import (
+    BeautifulSoup,
+    Tag,
+)
 
-# import pandas as pd
-import regex as re
-
-from uoapi.course import patterns as pt
-from uoapi.course import Prereq
-
-# requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':DES-CBC3-SHA'
-# timetable_url = 'https://web30.uottawa.ca/v3/SITS/timetable/Search.aspx'
+from uoapi.course import (
+    patterns as pt,
+    utils,
+    Prereq,
+    parse,
+)
+from uoapi.course.models import (
+    Subject,
+    Course,
+)
 
 # Course Info Parameters
 course_url = "https://catalogue.uottawa.ca/en/courses/"
@@ -20,161 +23,92 @@ course_url = "https://catalogue.uottawa.ca/en/courses/"
 #############################################################################
 
 
-def _extract_codes(string: str, return_all: bool = True):
-    """
-    Returns course codes found in string;
-    if multiple codes are found and return_all is False, then returns an invalid code
-    Used in get_subjects.ipynb"""
-    codes = list({x.group(0) for x in re.finditer(pt.code_re, string)})
-    if return_all or len(codes) == 1:
-        return codes
-    return "XXX 0000"
-
-
-def _extract_credits(string: str):
-    """
-    Searches string for a number of credits/units
-    (Assuming the string is the title of a course)
-    Used in get_subjects.ipynb
-    """
-    credits = list(
-        {
-            int(x.group(0).split(" ")[0].strip("("))
-            for x in re.finditer(pt.credit_re, string)
-        }
-    )
-    if len(credits) == 1:
-        return credits
-    return [0]
-
-
 def scrape_subjects(url: str = course_url):
     """
-    Scrapes the list of subjects with links to their respective course catalogues from the uOttawa website
-    () -> pandas DataFrame with columns: Subject, Code, Link
-    Used in get_subjects.ipynb
+    Scrapes the list of subjects with links to their respective course
+    catalogues from the uOttawa website
     """
     page = requests.get(url).text
-
     soup = BeautifulSoup(page, "html.parser")
-    content = soup.find("div", attrs={"class": "az_sitemap"})
-    subj_tags = content.find_all("a", attrs={"href": pt.href_re})
 
-    # subj_table = []
-    # for tag in subj_tags:
-    #    subj_table.append([tag.string, tag['href'].strip('/').rsplit('/')[-1]])
-    subj_table = [
-        [tag.string, tag["href"].strip("/").rsplit("/")[-1].strip().strip("/")]
-        for tag in subj_tags
-    ]
-    return [
-        {
-            "subject": pt.subj_re.sub("", x[0]).strip(),
-            "subject_code": x[1].upper(),
-            "link": url + x[1] + "/",
-        }
-        for x in subj_table
-    ]
-    # subjects = pd.DataFrame(subj_table, columns=['Subject', 'Code'])
-    # subjects['Code'] = subjects['Code'].str.strip().str.strip('/')
-    # subjects['Link'] = url + subjects['Code'] + '/'
-    # subjects.Subject = subjects.Subject.str.replace(pt.subj_re.pattern, '').str.strip()
-    # return subjects
+    match div := soup.find("div", attrs={"class": "az_sitemap"}):
+        # BeautifulSoup doesn't provide type annotations so mypy doesn't
+        # play nice with this in a case statement
+        case Tag():  # type: ignore
+            content = div
+        case _:
+            raise ValueError("Could not find div with class az_sitemap")
+
+    subject_tags = utils.get_taglist_from_resultset(
+        content.find_all(
+            "a",
+            attrs={"href": pt.href_re},
+        )
+    )
+
+    subjects: list[Subject] = []
+
+    for tag in subject_tags:
+        subject = parse.subject_tag(tag, url)
+        if subject is not None:
+            subjects.append(subject)
+
+    return [subject.dict() for subject in subjects]
 
 
-# @TODO break up into subfunctions
+def get_course_from_tag(tag: Tag):
+    title_tag = tag.find("p", attrs={"class": "courseblocktitle"})
+
+    if title_tag is None:
+        raise ValueError("Could not find courseblocktitle")
+
+    description_tag = tag.find("p", attrs={"class": "courseblockdesc"})
+
+    block_tags = utils.get_taglist_from_resultset(
+        tag.find_all(
+            "div",
+            attrs={"class": "courseblockextra"},
+        )
+    )
+
+    code, title, credits = parse.title_tag(title_tag)
+    description = parse.description_tag(description_tag)
+    prereq_string, components = parse.extras_blocks(block_tags)
+
+    description += "\n" + components
+    description = description.strip()
+
+    components = utils.get_description_content(components)
+
+    dependencies = Prereq(prereq_string).prereqs
+    prerequisites = utils.get_description_content(prereq_string)
+
+    return Course(
+        course_code=code,
+        title=title,
+        credits=credits,
+        description=description,
+        dependencies=dependencies,
+        components=utils.split_component_parts(components),
+        prerequisites=prerequisites,
+    )
+
+
 def get_courses(link: str):
     """
-    Scrapes the page given by link for courses and their descriptions, components, prerequisites, etc.
+    Scrapes the page given by link for courses and their descriptions, components,
+    prerequisites, etc.
     """
-    raw_courses = BeautifulSoup(requests.get(link).text, "html.parser")
-    raw_courses = raw_courses.find_all("div", attrs={"class": "courseblock"})
-    for course in raw_courses:
-        try:
-            title = (
-                course.find("p", attrs={"class": "courseblocktitle"})
-                .text.replace("\xa0", " ")
-                .strip()
-            )
-            title = title.replace("&nbsp;", " ").strip()
-        except AttributeError as e:
-            print(course, file=sys.stderr)
-            raise e
-        else:
-            code = _extract_codes(title, False)[0]
-            credits = _extract_credits(title)[0]
-            title = re.sub(pt.code_re, "", title)
-            title = re.sub(pt.credit_re, "", title).strip()
-        try:
-            desc = course.find("p", attrs={"class": "courseblockdesc"})
-            desc = desc.text.replace("\xa0", " ").strip()
-        except AttributeError as e:
-            if desc is None:
-                desc = ""
-            else:
-                print(course)
-                raise e
-        # parsing the course component and prerequisite info from the courseblockextra and distinguishing them
-        blocks = []
-        for block in course.find_all("p", attrs={"class": "courseblockextra"}):
-            try:
-                block = block.text.replace("\xa0", " ").strip().strip(".")
-                block = block.replace("&nbsp;", " ").strip().strip(".")
-                blocks.append(block)
-            except AttributeError as e:
-                print(course)
-                print(block)
-                raise e
-        if len(blocks) == 0:
-            comp = ""
-            pre = ""
-        elif len(blocks) == 1:
-            if ("Volet" in blocks[0]) or ("Course Component" in blocks[0]):
-                comp = blocks[0]
-                pre = ""
-            elif ("Préalable" in blocks[0]) or ("Prerequisite" in blocks[0]):
-                comp = ""
-                pre = blocks[0]
-            else:
-                comp = ""
-                pre = ""
-        elif len(blocks) == 2:
-            cond_comp0 = ("Volet" in blocks[0]) or ("Course Component" in blocks[0])
-            cond_pre1 = ("Préalable" in blocks[1]) or ("Prerequisite" in blocks[1])
-            cond_comp1 = ("Volet" in blocks[1]) or ("Course Component" in blocks[1])
-            cond_pre0 = ("Préalable" in blocks[0]) or ("Prerequisite" in blocks[0])
-            if cond_comp0 and not cond_pre0:
-                comp = blocks[0]
-            elif cond_comp1 and not cond_pre1:
-                comp = blocks[1]
-            else:
-                comp = ""
-            if cond_pre0 and not cond_comp0:
-                pre = blocks[0]
-            elif cond_pre1 and not cond_comp1:
-                pre = blocks[1]
-            else:
-                pre = ""
-        else:
-            comp = ""
-            pre = ""
-        # adding component info to the end of the description
-        desc = desc + "\n" + comp
-        desc = desc.strip()
-        # getting the components from after the colon in the sentence
-        comp = comp.split(":", 1)[-1].strip()
-        comp = [x.strip().upper() for x in comp.split("/")[-1].split(",")]
-        # getting the prerequisites from after the colon in the sentence
-        dep = Prereq(pre).prereqs
-        pre = pre.split(":", 1)[-1].strip()
-        # TODO: ideally we would like to save the whole Prereq object to the dataframe, but since it does not output to json, using this in the meantime
-        yield {
-            "course_code": pt.code_groups.search(code).groups()[1].upper(),
-            "title": title,
-            "credits": credits,
-            "description": desc,
-            "components": comp,
-            "prerequisites": pre,
-            "dependencies": dep,
-        }
-    # return pd.DataFrame(courses, columns = ['code', 'title', 'credits', 'desc', 'components', 'prerequisites', 'dependencies'])
+    raw_courses = BeautifulSoup(
+        requests.get(link).text,
+        "html.parser",
+    )
+    course_tags = utils.get_taglist_from_resultset(
+        raw_courses.find_all(
+            "div",
+            attrs={"class": "courseblock"},
+        )
+    )
+
+    for course_tag in course_tags:
+        yield get_course_from_tag(course_tag).dict()
