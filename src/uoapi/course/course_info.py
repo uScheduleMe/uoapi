@@ -31,11 +31,11 @@ def scrape_subjects(url: str = course_url):
     page = requests.get(url).text
     soup = BeautifulSoup(page, "html.parser")
 
-    match div := soup.find("div", attrs={"class": "az_sitemap"}):
+    match content := soup.find("div", attrs={"class": "az_sitemap"}):
         # BeautifulSoup doesn't provide type annotations so mypy doesn't
         # play nice with this in a case statement
         case Tag():  # type: ignore
-            content = div
+            pass
         case _:
             raise ValueError("Could not find div with class az_sitemap")
 
