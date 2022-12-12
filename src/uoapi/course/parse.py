@@ -20,8 +20,7 @@ def title_tag(tag: Tag | NavigableString) -> tuple[str, str, int]:
     """
     Extracts course code, title, and credits from a courseblocktitle tag
     """
-    title = tag.text.replace("\xa0", " ").strip()
-    title = title.replace("&nbsp;", " ").strip()
+    title = utils.replace_special_spaces(tag.text)
 
     code = utils.extract_codes(title, False)[0]
     title = utils.remove_codes(title)
@@ -44,7 +43,7 @@ def description_tag(tag: Tag | NavigableString | None) -> str:
     if tag is None:
         return ""
 
-    description = tag.text.replace("\xa0", " ").strip()
+    description = utils.replace_special_spaces(tag.text)
     return description
 
 
@@ -72,17 +71,27 @@ def extras_blocks(tags: list[Tag]) -> tuple[str, str]:
     """
     Extracts the prerequisites and components
     from a list of courseblockextra tags
+
+    Args:
+        tags: The list of courseblockextra tags
+
+    Returns:
+        A tuple containing the prerequisites and component strings.
+        If the prerequisites or components are not found, an empty string
+        is returned for that value.
     """
     blocks: list[str] = []
 
     for tag in tags:
         blocks.append(
-            tag.text.replace("\xa0", " ")
+            # No idea if the additional strips are necessary
+            # but they were in the original code so I'm keeping them
+            # for now
+            utils.replace_special_spaces(tag.text)
+            .strip(".")
             .strip()
             .strip(".")
-            .replace("&nbsp;", " ")
             .strip()
-            .strip(".")
         )
 
     match blocks:
@@ -90,19 +99,13 @@ def extras_blocks(tags: list[Tag]) -> tuple[str, str]:
             return "", block
         case [block] if utils.has_prerequisite(block):
             return block, ""
-        case [block, _] if utils.is_prerequisite_string(block):
-            prerequisites = block
-        case [_, block] if utils.is_prerequisite_string(block):
-            prerequisites = block
+        case [pre, comp] | [comp, pre] if utils.is_prereq_and_component(pre, comp):
+            return pre, comp
+        case [block, _] | [_, block] if utils.is_prerequisite_string(block):
+            return block, ""
+        case [block, _] | [_, block] if utils.is_component_string(block):
+            return "", block
         case _:
-            prerequisites = ""
+            pass
 
-    match blocks:
-        case [block, _] if utils.is_component_string(block):
-            components = block
-        case [_, block] if utils.is_component_string(block):
-            components = block
-        case _:
-            components = ""
-
-    return prerequisites, components
+    return "", ""

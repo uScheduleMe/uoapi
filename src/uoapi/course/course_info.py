@@ -27,6 +27,12 @@ def scrape_subjects(url: str = course_url):
     """
     Scrapes the list of subjects with links to their respective course
     catalogues from the uOttawa website
+
+    Args:
+        url: The url to scrape from
+
+    Returns:
+        A list of Subject objects converted to dictionaries
     """
     page = requests.get(url).text
     soup = BeautifulSoup(page, "html.parser")
@@ -57,6 +63,19 @@ def scrape_subjects(url: str = course_url):
 
 
 def get_course_from_tag(tag: Tag):
+    """
+    Given a courseblock tag, extracts the course information from
+    the tag and returns a Course object
+
+    Args:
+        tag: The courseblock tag
+
+    Raises:
+        ValueError: If the courseblocktitle tag cannot be found
+
+    Returns:
+        The course object
+    """
     title_tag = tag.find("p", attrs={"class": "courseblocktitle"})
 
     if title_tag is None:

@@ -127,6 +127,24 @@ def is_component_string(string: str) -> bool:
     return has_component(string) and not has_prerequisite(string)
 
 
+def is_prereq_and_component(prereq: str, component: str) -> bool:
+    """
+    Checks if a pair of strings satisfy the condition that the first is a prerequisite
+    and the second is a component.
+
+    This is used to simplify pattern matching
+
+    Args:
+        prereq: A string that may or may not be a prerequisite
+        component: A string that may or may not be a component
+
+    Returns:
+        True if the strings are a prerequisite and a component respectively,
+        False otherwise
+    """
+    return is_prerequisite_string(prereq) and is_component_string(component)
+
+
 def get_description_content(string: str) -> str:
     """
     Returns the content after the first colon in a description string
@@ -143,3 +161,11 @@ def split_component_parts(components: str) -> list[str]:
     return [
         component.strip().upper() for component in components.split("/")[-1].split(",")
     ]
+
+
+def replace_special_spaces(string: str) -> str:
+    """
+    Removes special spaces from a string
+    """
+
+    return string.replace("\xa0", " ").replace("&nbsp;", " ").strip()
