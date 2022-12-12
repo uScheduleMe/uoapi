@@ -1,5 +1,3 @@
-import sys
-
 from bs4 import (
     Tag,
     NavigableString,
@@ -78,29 +76,20 @@ def extras_blocks(tags: list[Tag]) -> tuple[str, str]:
     blocks: list[str] = []
 
     for tag in tags:
-        match tag:
-            case Tag():  # type: ignore
-                blocks.append(
-                    tag.text.replace("\xa0", " ")
-                    .strip()
-                    .strip(".")
-                    .replace("&nbsp;", " ")
-                    .strip()
-                    .strip(".")
-                )
-            case _:
-                print(tag, file=sys.stderr)
-                raise ValueError(f"Unexpected type in tag {tag}")
+        blocks.append(
+            tag.text.replace("\xa0", " ")
+            .strip()
+            .strip(".")
+            .replace("&nbsp;", " ")
+            .strip()
+            .strip(".")
+        )
 
     match blocks:
         case [block] if utils.has_component(block):
             return "", block
         case [block] if utils.has_prerequisite(block):
             return block, ""
-        case [block]:
-            return "", ""
-        case []:
-            return "", ""
         case [block, _] if utils.is_prerequisite_string(block):
             prerequisites = block
         case [_, block] if utils.is_prerequisite_string(block):
