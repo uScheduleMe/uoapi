@@ -50,7 +50,7 @@ def remove_codes(string: str):
     Returns:
         String with course codes removed
     """
-    return re.sub(pt.code_re, "", string)
+    return re.sub(pt.code_re, "", string).strip()
 
 
 def remove_credits(string: str):
@@ -63,7 +63,7 @@ def remove_credits(string: str):
     Returns:
         String with credits removed
     """
-    return re.sub(pt.credit_re, "", string)
+    return re.sub(pt.credit_re, "", string).strip()
 
 
 def get_taglist_from_resultset(results: ResultSet[Any]) -> list[Tag]:
@@ -168,4 +168,4 @@ def replace_special_spaces(string: str) -> str:
     Removes special spaces from a string
     """
 
-    return string.replace("\xa0", " ").replace("&nbsp;", " ").strip()
+    return string.replace("\xa0", " ").replace("&nbsp;", " ").strip().strip()
