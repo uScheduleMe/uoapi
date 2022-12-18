@@ -85,7 +85,7 @@ def get_course_from_tag(tag: Tag):
 
     block_tags = utils.get_taglist_from_resultset(
         tag.find_all(
-            "div",
+            "p",
             attrs={"class": "courseblockextra"},
         )
     )
