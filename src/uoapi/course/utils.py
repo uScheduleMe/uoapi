@@ -168,4 +168,4 @@ def replace_special_spaces(string: str) -> str:
     Removes special spaces from a string
     """
 
-    return string.replace("\xa0", " ").replace("&nbsp;", " ").strip().strip()
+    return string.replace("\xa0", " ").replace("&nbsp;", " ").strip()
