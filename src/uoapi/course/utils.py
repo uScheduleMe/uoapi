@@ -99,52 +99,6 @@ def clean_subject_label(label: str) -> str:
     return pt.subj_re.sub("", label).strip()
 
 
-def has_prerequisite(string: str) -> bool:
-    """
-    Checks if a string contains a prerequisite
-    """
-    return "Prerequisite" in string or "Préalable" in string
-
-
-def has_component(string: str) -> bool:
-    """
-    Checks if a string contains a course component
-    """
-    return "Course Component" in string or "Volet" in string
-
-
-def is_prerequisite_string(string: str) -> bool:
-    """
-    Checks if a string is a prerequisite string exclusively
-    """
-    return has_prerequisite(string) and not has_component(string)
-
-
-def is_component_string(string: str) -> bool:
-    """
-    Checks if a string is a component string exclusively
-    """
-    return has_component(string) and not has_prerequisite(string)
-
-
-def is_prereq_and_component(prereq: str, component: str) -> bool:
-    """
-    Checks if a pair of strings satisfy the condition that the first is a prerequisite
-    and the second is a component.
-
-    This is used to simplify pattern matching
-
-    Args:
-        prereq: A string that may or may not be a prerequisite
-        component: A string that may or may not be a component
-
-    Returns:
-        True if the strings are a prerequisite and a component respectively,
-        False otherwise
-    """
-    return is_prerequisite_string(prereq) and is_component_string(component)
-
-
 def get_description_content(string: str) -> str:
     """
     Returns the content after the first colon in a description string

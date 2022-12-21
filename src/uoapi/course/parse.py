@@ -9,6 +9,8 @@ from uoapi.course import (
 )
 from uoapi.course.models import (
     Subject,
+    Prerequisite,
+    Component,
 )
 
 from typing import (
@@ -80,32 +82,28 @@ def extras_blocks(tags: list[Tag]) -> tuple[str, str]:
         If the prerequisites or components are not found, an empty string
         is returned for that value.
     """
-    blocks: list[str] = []
+    blocks: list[Prerequisite | Component] = []
 
     for tag in tags:
-        blocks.append(
-            # No idea if the additional strips are necessary
-            # but they were in the original code so I'm keeping them
-            # for now
-            utils.replace_special_spaces(tag.text)
-            .strip(".")
-            .strip()
-            .strip(".")
-            .strip()
+        block = (
+            utils.replace_special_spaces(tag.text).strip(".").strip().strip(".").strip()
         )
 
+        if component := Component.try_parse(block):
+            blocks.append(component)
+        if prerequisite := Prerequisite.try_parse(block):
+            blocks.append(prerequisite)
+
     match blocks:
-        case [block] if utils.has_component(block):
-            return "", block
-        case [block] if utils.has_prerequisite(block):
+        case [Prerequisite(content=block)]:
             return block, ""
-        case [pre, comp] | [comp, pre] if utils.is_prereq_and_component(pre, comp):
-            return pre, comp
-        case [block, _] | [_, block] if utils.is_prerequisite_string(block):
-            return block, ""
-        case [block, _] | [_, block] if utils.is_component_string(block):
+        case [Component(content=block)]:
             return "", block
+        case [Prerequisite(content=prereq), Component(content=comp)]:
+            return prereq, comp
+        case [Component(content=comp), Prerequisite(content=prereq)]:
+            return prereq, comp
         case _:
-            pass
+            return "", ""
 
     return "", ""
