@@ -32,7 +32,7 @@ def mock_subject_list(page: str):
 
 @pytest.mark.regress
 def test_subjects():
-    with open(absolute_path("data/subjects.json"), "r") as f:
+    with open(absolute_path("data/subjects.json"), "r", encoding="utf-8") as f:
         subjects = json.load(f)
     with HTTMock(mock_subject_list(subjects["page"])):
         results = scrape_subjects(course_url)
@@ -55,7 +55,7 @@ def mock_subject_page(link: str, page: str):
 
 @pytest.mark.regress
 def test_courses():
-    with open(absolute_path("data/courses.json"), "r") as f:
+    with open(absolute_path("data/courses.json"), "r", encoding="utf-8") as f:
         course_data = json.load(f)
     commit = course_data["commit"]
     for subject in course_data["subjects"]:
