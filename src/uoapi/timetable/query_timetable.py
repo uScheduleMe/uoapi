@@ -6,18 +6,43 @@ import itertools as it
 from functools import wraps
 import argparse
 import logging
-from typing import Union, Tuple, Optional, Callable, List
+import sys
+from typing import (
+    Any,
+    Callable,
+    Concatenate as Cat,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    ParamSpec,
+    Sized,
+    Tuple,
+    Type,
+    TypedDict,
+    TypeVar,
+    Union,
+    assert_type,
+    cast,
+)
 
-import requests
-from bs4 import BeautifulSoup
-import regex as re
+import requests  # type: ignore
+from bs4 import BeautifulSoup  # type: ignore
+from bs4.element import Tag  # type: ignore
+import regex as re  # type: ignore
 
 import uoapi.course.patterns as pt
 
+def eprint(*args, **kwargs):
+    return print(*args, file=sys.stderr, **kwargs)
 
 logging.getLogger(__name__)
 
-def absolute_path(path):
+def absolute_path(path: str) -> str:
+    """
+    Given a `path` relative to this source file,
+    return the corresponding absolute path.
+    """
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
 
 
@@ -49,22 +74,28 @@ default_headers = (('Content-Type', "application/x-www-form-urlencoded"),)
 
 # Utilities
 
+Logger = Callable[[int, str], Any]
+
 class ErrorMessenger:
+    log: Optional[Logger]
 
     def __init__(
-        self, 
-        msg_list: Optional[list] = None, 
+        self,
+        msg_list: Optional[list] = None,
         prefix: str = "",
-        log: bool = False, 
-        raise_: Optional[Exception]=None,
+        log: Union[bool, Logger] = False,
+        raise_: Optional[Type[Exception]] = None,
     ):
         if msg_list is None:
             msg_list = []
         self.msg_list = msg_list
         self.prefix = prefix
-        if log and not isinstance(log, Callable):
-            log = logging.log
-        self.log = log
+        if log is True:
+            self.log = logging.log
+        elif log is False:
+            self.log = None
+        else:
+            self.log = log
         self.raise_ = raise_
 
     def __call__(self, err_type: str, message: str, **kwargs):
@@ -93,10 +124,11 @@ def make_request(
     method_kwargs: dict,
     retries: int = 2,
     sleeptime: Union[int, float] = 0.5,
-) -> Tuple[bool, Optional[requests.models.Response]]:
-    r = None
+) -> Tuple[bool, requests.models.Response] | Tuple[Literal[False], None]:
+    if retries <= 0:
+        return False, None
     for _ in range(retries):
-        r = method(*method_args, **method_kwargs)
+        r: requests.models.Response = method(*method_args, **method_kwargs)
         if 200 == r.status_code:
             messager("success", "%s success" % r.request.method)
             return True, r
@@ -104,9 +136,21 @@ def make_request(
         time.sleep(sleeptime)
     return False, r
 
-def require_context(method):
+R = TypeVar("R")
+P = ParamSpec("P")
+
+def require_context(
+    method: Callable[Cat["TimetableQuery", P], R]
+) -> Callable[Cat["TimetableQuery", P], R]:
+    """
+    Decorate a method of an object with a `.in_context` boolean field.
+
+    This will ensure that the `.in_context` field is set to `True`
+    before executing the method;
+    if the field is `False`, raise an exception.
+    """
     @wraps(method)
-    def new_method(self, *args, **kwargs):
+    def new_method(self: "TimetableQuery", *args: P.args, **kwargs: P.kwargs) -> R:
         if self.in_context:
             return method(self, *args, **kwargs)
         raise Exception("This method can only be called while using its object in a context")
@@ -114,29 +158,45 @@ def require_context(method):
 
 # Main query class
 
-class TimetableQuery:
+K = TypeVar("K")
+V = TypeVar("V")
+IntoDict = Union[dict, Iterable[Tuple[K, V]]]
 
-    def __init__(self, 
+class TimetableQuery:
+    """
+    This context manager queries for timetables.
+
+    ```
+    querier = TimetableQuery()
+    with querier as messages:  # This calls `TimetableQuery.__enter__`
+        response, query_messages = tq(year, term, subj, code)  # This uses the `TimetableQuery.__call__` method
+    # At the end of the context, `TimetableQuery.__exit__` is called to clean things up
+    print(messages)  # Here's a list of messages the `querier` produced
+    ```
+    """
+
+    in_context: bool
+
+    def __init__(self,
         form: Union[str, dict] = absolute_path(
             os.path.join("data", "template_query.json")
         ), # if str, either file path or JSON
-        orig_link: Union[str, bytes] = orig_link, 
-        term_to_num: dict = term_to_num,
-        default_headers: dict = default_headers,
+        orig_link: Union[str, bytes] = orig_link,
+        term_to_num: IntoDict[str, str] = term_to_num,
+        default_headers: IntoDict[str, str] = default_headers,
         retries: int = 2,
         refresh: int = 5,
         sleeptime: Union[int, float] = 1,
         log: bool = False,
-        saveraw: Optional[Union[str, bytes]] = None,
+        saveraw: Optional[str] = None,
     ):
         if isinstance(form, dict):
-            form = dict(form)
+            self.form = dict(form)
         elif os.path.isfile(form):
             with open(form, "r") as f:
-                form = json.load(f)
+                self.form = json.load(f)
         else:
-            form = json.loads(form)
-        self.form = form
+            self.form = json.loads(form)
         self.orig_link = orig_link
         self.term_to_num = dict(term_to_num)
         self.default_headers = dict(default_headers)
@@ -208,15 +268,15 @@ class TimetableQuery:
             return None
         # If it is, return updates
         return BeautifulSoup(
-            text, 
+            text,
             'html.parser'
         ).find_all("input", type="hidden")
 
-    def update_form(self, new_form: dict) -> dict:
+    def update_form(self, new_form: dict) -> bool:
         new_form = {x["id"]:x["value"] for x in new_form}
         self.form.update({
-            x:y 
-            for x, y in new_form.items() 
+            x:y
+            for x, y in new_form.items()
             if y.strip() != ''
         })
         self.form['ICAction'] = 'CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH'
@@ -235,7 +295,7 @@ class TimetableQuery:
             return {}
         options = options[0].find_all("option")
         return {tag["value"].strip():tag.text
-            for tag in options 
+            for tag in options
             if re.search("[0-9]{4}", tag.get("value", "").strip()) is not None
         }
 
@@ -247,7 +307,7 @@ class TimetableQuery:
         term: Union[int, str, bytes],
         subject: Union[str, bytes],
         number: Union[int, str, bytes],
-    ) -> tuple:
+    ) -> tuple[str, str, str, str]:
         year = str(year).strip()
         if re.search(r"[0-9]{4}", year) is None:
             raise ValueError("Year not valid")
@@ -260,7 +320,7 @@ class TimetableQuery:
         if semester not in self.available:
             em("warning", "Semester may not be available: {}".format(term))
         subject = str(subject).strip().upper()
-        number = str(number).strip().upper() 
+        number = str(number).strip().upper()
         if pt.code_re.search((subject + number).upper()) is not None:
             search = "course"
         elif re.search("[A-Z]{3}", subject) and number in "12345":
@@ -335,7 +395,7 @@ class TimetableQuery:
         #    pass
         return self.form
 
-    def check_response(self, response: Union[str, bytes], em: ErrorMessenger, label=""):
+    def check_response(self, response: str, em: ErrorMessenger, label="") -> bool:
         if self.saveraw is not None and os.path.isdir(self.saveraw) and len(label) > 0:
             try:
                 with open(os.path.join(self.saveraw,
@@ -346,7 +406,7 @@ class TimetableQuery:
                 em("warning", "Saving html failed", exc_info=True)
         response = BeautifulSoup(response, "lxml")
         # Failure modes
-        msg = response.find(lambda x: search_tag(
+        msg: Optional[Tag] = response.find(lambda x: search_tag(
             x, "span", "id", "DERIVED_CLSMSG_ERROR_TEXT"
         ))
         # In some cases, this object is a field instead of a span
@@ -376,7 +436,7 @@ class TimetableQuery:
 
     def __call__(self,
         *args, **kwargs
-    ) -> Tuple[Union[str, bytes], List[dict]]:
+    ) -> Tuple[str, List[dict]]:
         label = "_".join(
             ["{}".format(x) for x in args]
             +["{}-{}".format(k, v) for k, v in kwargs.items()]
@@ -396,8 +456,8 @@ class TimetableQuery:
         try:
             self.format_form(em, *args, **kwargs)
         except Exception as e:
-            em("error", 
-                e.args[0] if len(e.args) > 0 
+            em("error",
+                e.args[0] if len(e.args) > 0
                 else "Unknown {} in format_form".format(type(e)),
                 exc_info=True
             )
@@ -418,7 +478,10 @@ class TimetableQuery:
                     self.sleeptime,
                 )
                 # If `success` is False, don't check response
-                success = success and self.check_response(response.text, em, label)
+                if success:
+                    # If `response` is `None`, then `success` *must* be False.
+                    response = cast(requests.models.Response, response)
+                    success = self.check_response(response.text, em, label)
                 if (success
                     or len(em.msg_list) == 0
                     or "Unknown error in query response" not in em.msg_list[-1]["message"]
@@ -429,6 +492,8 @@ class TimetableQuery:
                     logging.warning(label + ": " + "unknown error, possible stale connection, retrying...")
                     self.refresh()
         if success:
+            # If `response` is `None`, then `success` *must* be False.
+            response = cast(requests.models.Response, response)
             return response.text, em.msg_list
         return "", em.msg_list
 
@@ -439,13 +504,14 @@ class TimetableQuery:
 
 # Utilities
 
-def lget(seq, ind, default=None):
+def lget(seq: list[V], ind: int, default: Optional[V] = None) -> Optional[V]:
     if -len(seq) <= ind <= len(seq):
         return seq[ind]
     return default
 
-def group_by_eq(seq, equalizer):
-    equiv_classes = {}
+
+def group_by_eq(seq: Iterable[V], equalizer: Callable[[V], K]) -> dict[K, list[V]]:
+    equiv_classes: dict[K, list[V]] = {}
     for elt in seq:
         eq = equalizer(elt)
         if eq not in equiv_classes:
@@ -453,55 +519,97 @@ def group_by_eq(seq, equalizer):
         equiv_classes[eq].append(elt)
     return equiv_classes
 
-def search_tag(tag, tag_name, attribute, 
-               string, matcher=(lambda x,y: re.search(x, y) is not None)):
+def search_tag(
+    tag: Tag,
+    tag_name: str,
+    attribute: str,
+    string: str,
+    matcher: Callable[[str, str], bool] = (
+        lambda x, y: re.search(x, y) is not None
+    ),
+) -> Optional[bool]:
     try:
         if re.compile(tag_name, re.I).match(tag.name):
             return (tag.has_attr(attribute)
                     and matcher(string, tag[attribute]))
-    except:
+    except Exception:
         return False
+    return None
 
 tag_is_course = lambda x: search_tag(
-                    x, 
-                    "div", 
-                    "id", 
-                    "win0divSSR_CLSRSLT_WRK_GROUPBOX2$", 
+                    x,
+                    "div",
+                    "id",
+                    "win0divSSR_CLSRSLT_WRK_GROUPBOX2$",
                     lambda x,y: y.startswith(x)
                 )
 course_tag_is_title = lambda x: search_tag(
-                        x, 
-                        "div", 
-                        "id", 
+                        x,
+                        "div",
+                        "id",
                         "win0divSSR_CLSRSLT_WRK_GROUPBOX2GP",
                         lambda x,y: y.startswith(x)
                       )
 course_tag_is_section = lambda x: search_tag(
-                            x, 
-                            "div", 
-                            "id", 
+                            x,
+                            "div",
+                            "id",
                             "win0divSSR_CLSRSLT_WRK_GROUPBOX",
                             lambda x, y: y.startswith(x)
                         )
 section_tag_is_classname = lambda x: search_tag(
-                                x, 
-                                "a", 
-                                "id", 
+                                x,
+                                "a",
+                                "id",
                                 "MTG_CLASSNAME"
                            )
 
-def normalize_whitespace(string):
+def normalize_whitespace(string: str) -> str:
     string = string.replace('\xa0', ' ')
     string = string.replace('&nbsp;', ' ')
     return string.strip()
 
 # Scraping
 
-def _fail_value(fail, message):
+class Section(TypedDict):
+    year: int
+    label: str
+    term: str
+    components: List[Any]  # TODO
+
+class ComponentCommon(TypedDict):
+    type: str
+    label: str
+    section_id: str
+    session_type: str
+    status: str
+    description: str
+
+class Component(ComponentCommon):
+    room: str
+    instructor: str
+    day: str
+    start_time: str
+    end_time: str
+    start_date: str
+    end_date: str
+
+class Course(TypedDict):
+    subject_code: str
+    course_code: str
+    course_name: str
+    sections: List[Section]
+    messages: list  # TODO
+
+def _fail_value(fail: bool, message: str) -> None:
     if fail:
         raise ValueError(message)
 
-def parse_available(s):
+class Term(TypedDict):
+    year: int
+    term: str
+
+def parse_available(s: str) -> Optional[Term]:
     s = s.strip().lower()
     _fail_value(len(s) != 4, "The term code should be 4 digits long")
     s = s[1:]
@@ -515,12 +623,12 @@ def parse_available(s):
     except Exception:
         return None
 
-def extract_section(section, descr, log=False, err_msg_prefix=""):
+def extract_components(section: Tag, descr: str, log: bool = False, err_msg_prefix: str = "") -> Tuple[List[Component], list]:
     em = ErrorMessenger(log=log, prefix=err_msg_prefix)
     section_name = section(section_tag_is_classname)[0].contents
     sec_id, sec_type = section_name[0].strip().upper(), section_name[-1].strip()
     id_, type_ = re.search("\s*([A-Z]*)\s*[0-9]*-\s*([A-Z]+)\s*", sec_id).groups()
-    status = section(lambda x: 
+    status = section(lambda x:
         search_tag(
             x, "div", "id", "win0divDERIVED_CLSRCH_SSR_STATUS_LONG"
         )
@@ -530,7 +638,7 @@ def extract_section(section, descr, log=False, err_msg_prefix=""):
     else:
         status = ""
     # Extract elements common to the section
-    section_out = {
+    section_out: ComponentCommon = {
         "label": sec_id.strip().upper(),
         "section_id": id_.strip().upper(),
         "type": type_.strip().upper(),
@@ -539,42 +647,44 @@ def extract_section(section, descr, log=False, err_msg_prefix=""):
         "description": normalize_whitespace(descr),
     }
     # Extract individual components
-    rooms = [x.strip() for x in section(lambda x:  
-            search_tag(x, "span", "id", "MTG_ROOM"))[0].contents 
+    rooms = [x.strip() for x in section(lambda x:
+            search_tag(x, "span", "id", "MTG_ROOM"))[0].contents
         if isinstance(x, str)
     ]
-    instrs = [x.strip() for x in section(lambda x:  
-            search_tag(x, "span", "id", "MTG_INSTR"))[0].contents 
+    instrs = [x.strip() for x in section(lambda x:
+            search_tag(x, "span", "id", "MTG_INSTR"))[0].contents
         if isinstance(x, str)
     ]
-    topic = [x.strip() for x in section(lambda x:  
-            search_tag(x, "span", "id", "MTG_TOPIC"))[0].contents 
+    topic_strs = [x.strip() for x in section(lambda x:
+            search_tag(x, "span", "id", "MTG_TOPIC"))[0].contents
         if isinstance(x, str)
     ]
     date_re = re.compile(r"[0-9]{4}(?:\s*-\s*[0-9]{2}){2}")
-    for i, s in enumerate(topic):
-        s = [re.sub(r"\s*", "", x) for x in date_re.findall(s)]
-        if len(s) != 2:
+    topic: list[list[str]] = []
+    for i, s in enumerate(topic_strs):
+        dates = [re.sub(r"\s*", "", x) for x in date_re.findall(s)] # what is this REMOVE ALL SPACES IN DATES
+        if len(dates) != 2:
             em(
-                "debug" if len(s) < 2 else "info",
-                "Incorrect number of dates ({})".format(len(s))
+                "debug" if len(dates) < 2 else "info",
+                "Incorrect number of dates ({})".format(len(dates))
                 +" found in string {}".format(i),
             )
-        s += [""] * max(0, 2 - len(s))
-        topic[i] = s
-    dttms = [x.strip().split(" ", 1) for x in section(lambda x:  
-            search_tag(x, "span", "id", "MTG_DAYTIME"))[0].contents 
+        dates += [""] * max(0, 2 - len(dates)) # what is this PADDING LENGTH OF ARRAY
+        topic.append(dates)
+    dttms: list[list[str]] = [x.strip().split(" ", 1) for x in section(lambda x:
+            search_tag(x, "span", "id", "MTG_DAYTIME"))[0].contents
         if isinstance(x, str)
     ]
     # Handle the case when the number of details differ between columns
     #@TODO Move to own function
-    n = max(map(len, (rooms, instrs, topic, dttms)))
-    if min(map(len, (rooms, instrs, topic, dttms))) < n:
+    stuff: list[Sized] = [rooms, instrs, topic, dttms]
+    n = max(map(len, stuff))
+    if min(map(len, stuff)) < n:
         em("debug", "inconsistent details length in %s" % id_)
     # Handle multiple instructors
     if (len(instrs) / len(dttms)) % 1 != 0:
         em(
-            "debug", 
+            "debug",
             "number of instructors not a multiple of number of days: "
             +"id %s, instructors %i, days %i" % (sec_id, len(instrs), len(dttms))
         )
@@ -589,7 +699,8 @@ def extract_section(section, descr, log=False, err_msg_prefix=""):
             "debug",
             "distributing instructors accross days"
         )
-    n = max(map(len, (rooms, instrs, topic, dttms)))
+    stuff: list[Sized] = [rooms, instrs, topic, dttms]
+    n = max(map(len, stuff))
     #
     return [{
         "room": normalize_whitespace(rooms[i])
@@ -606,29 +717,31 @@ def extract_section(section, descr, log=False, err_msg_prefix=""):
             if i < len(topic) else "",
         "end_date": topic[i][1]
             if i < len(topic) else "",
-        **section_out
+        **section_out  # type: ignore
+        # Pending PR: https://github.com/python/mypy/pull/13353
     } for i in range(n)], em.msg_list
 
-def extract_course(course, year, term, log=False):
-    title = course(course_tag_is_title)[0].text
+def extract_course(course_html: Tag, year: int, term: str, log: bool = False) -> Course:
+    title = course_html(course_tag_is_title)[0].text
     subject_code, course_code = pt.code_re.search(
         title,
     ).group().split()
     title = pt.code_re.sub("", title).strip().strip("-").strip()
-    course_out = {
+    course_out: Course = {
         "subject_code": subject_code.strip().upper(),
         "course_code": course_code.strip().upper(),
         "course_name": normalize_whitespace(title),
         "sections": [],
         "messages": [],
     }
-    for section in course(course_tag_is_section):
+    components = []
+    for section in course_html(course_tag_is_section):
         subsection = section.find(lambda x: search_tag(
             x,
             "tr",
             "id",
             "trSSR_CLSRCH_MTG",
-        ))
+        ))# TODO FIGURE OUT HOW DO
         if subsection is None:
             continue
         descr = section.find(lambda x:
@@ -636,41 +749,42 @@ def extract_course(course, year, term, log=False):
                 x, "div", "id", "win0divDERIVED_CLSRCH_DESCRLONG"
             )
         )
-        sections, messages = extract_section(
+        sections, messages = extract_components(
             section,
             descr.text.strip() if descr is not None else "",
             log,
             "{} {}, {subject_code}{course_code}".format(term, year, **course_out),
         )
-        course_out["sections"] += sections
+        components += sections
         course_out["messages"] += messages
-    course_out["sections"] = group_by_eq(
-        course_out["sections"],
-        lambda x: x["section_id"] 
+    grouped_sections = group_by_eq(
+        components,
+        lambda x: x["section_id"]
     )
     course_out["sections"] = [{
         "year": year,
         "term": term.strip().lower(),
         "label": id_.strip().upper(),
         "components": components
-    } for id_, components in course_out["sections"].items()]
+    } for id_, components in grouped_sections.items()]
     return course_out
 
+
 def distribute_shared_sections(
-    sections: List[dict],
+    sections: List[Section],
     messages: List[dict],
     log: bool = False,
     err_msg_prefix: str = "",
-    ):
+) -> List[Section]:
     em = ErrorMessenger(messages, log=log, prefix=err_msg_prefix)
-    sec_comps = {}
+    sec_comps: dict = {}
     for section in sections:
         sec_comps[section["label"]] = []
         for component in section["components"]:
             if component["type"] not in sec_comps[section["label"]]:
                 sec_comps[section["label"]].append(component["type"])
     # Get sections with x distinct IDs for each x.
-    arr_lookup = lambda elt: len(sec_comps[elt["label"]])
+    arr_lookup = lambda elt: len(sec_comps[elt["label"]]) # what is this
     comp_secs = group_by_eq(sections, arr_lookup)
     # If there are no sections with only one ID,
     # this course is already well distributed.
@@ -705,10 +819,17 @@ def distribute_shared_sections(
     return sections_out
 
 
-def extract_timetable(text, year, term, log=False):
+
+
+def extract_timetable(
+    text: str,
+    year: int,
+    term: str,
+    log=False,
+) -> Iterable[Course]:
     soup = BeautifulSoup(text, "lxml")
-    for course in soup(tag_is_course):
-        course = extract_course(course, year, term, log)
+    for course_html in soup(tag_is_course):
+        course: Course = extract_course(course_html, year, term, log)
         course["sections"] = distribute_shared_sections(
             course["sections"],
             course["messages"],

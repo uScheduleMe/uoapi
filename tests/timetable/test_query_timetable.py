@@ -144,13 +144,13 @@ class TestTimetableQuery(unittest.TestCase):
         # Test failures
         with self.subTest("year"):
             self.assertRaisesRegex(
-                ValueError, "Year not valid", 
+                ValueError, "Year not valid",
                 self.tq.normalize_args, qt.ErrorMessenger(),
                 3, "winter", "mat", 3121
             )
         with self.subTest("term"):
             self.assertRaisesRegex(
-                ValueError, "Term not valid", 
+                ValueError, "Term not valid",
                 self.tq.normalize_args, qt.ErrorMessenger(),
                 2020, 2, "mat", 3121
             )

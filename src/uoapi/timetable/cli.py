@@ -5,7 +5,7 @@ import os, sys, time
 import json
 import argparse
 
-import regex as re
+import regex as re  # type: ignore
 
 from uoapi import __version__
 from uoapi.cli_tools import make_parser, make_cli
@@ -50,7 +50,7 @@ def parser(default):
         type=int,
         help="specify which year to query (2019, 2020)"
     )
-    default.add_argument("courses", 
+    default.add_argument("courses",
         action="store",
         metavar="XXX[[<>=?]?0[000]]",
         nargs="*",
@@ -117,7 +117,7 @@ def cli(args=None):
     else:
         args.waittime = max(0, args.waittime)
         for out in main(
-            args.courses, args.year, args.term, 
+            args.courses, args.year, args.term,
             args.saveraw, args.refresh, args.retries, args.waittime,
         ):
             print(json.dumps(out))
