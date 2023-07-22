@@ -1,0 +1,6 @@
+// This file exists so VSCode will resolve alias paths in excluded files,
+//   but we can still exclude them at build time
+{
+  "extends": "./tsconfig.json",
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+}

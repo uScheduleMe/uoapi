@@ -145,3 +145,6 @@ tags
 TAGS
 
 .vscode/
+
+# ts
+node_modules/

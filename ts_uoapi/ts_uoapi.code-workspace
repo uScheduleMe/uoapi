@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"typescript.tsdk": "node_modules/typescript/lib",
+		"prettier.configPath": "ts_uoapi/.prettierrc.js",
+		"prettier.trailingComma": "all",
+		"prettier.jsxSingleQuote": true,
+		"prettier.printWidth": 100,
+		"prettier.singleQuote": true
+	}
+}

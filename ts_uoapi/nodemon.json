@@ -1,0 +1,10 @@
+{
+  "watch": ["src", "build", "tsconfig.json"],
+  "ext": "ts,js",
+  "ignore": ["*.test.ts", "*.spec.ts", "*.test.js", "*.spec.js"],
+  "delay": "3",
+  "execMap": {
+    "js": "node -r ./tsconfig-paths.js",
+    "ts": "ts-node -r tsconfig-paths/register"
+  }
+}

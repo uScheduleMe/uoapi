@@ -638,7 +638,7 @@ def extract_components(section: Tag, descr: str, log: bool = False, err_msg_pref
     else:
         status = ""
     # Extract elements common to the section
-    section_out: ComponentCommon = {
+    component_out: ComponentCommon = {
         "label": sec_id.strip().upper(),
         "section_id": id_.strip().upper(),
         "type": type_.strip().upper(),
@@ -717,7 +717,7 @@ def extract_components(section: Tag, descr: str, log: bool = False, err_msg_pref
             if i < len(topic) else "",
         "end_date": topic[i][1]
             if i < len(topic) else "",
-        **section_out  # type: ignore
+        **component_out  # type: ignore
         # Pending PR: https://github.com/python/mypy/pull/13353
     } for i in range(n)], em.msg_list
 
@@ -749,13 +749,13 @@ def extract_course(course_html: Tag, year: int, term: str, log: bool = False) ->
                 x, "div", "id", "win0divDERIVED_CLSRCH_DESCRLONG"
             )
         )
-        sections, messages = extract_components(
+        some_components, messages = extract_components(
             section,
             descr.text.strip() if descr is not None else "",
             log,
             "{} {}, {subject_code}{course_code}".format(term, year, **course_out),
         )
-        components += sections
+        components += some_components
         course_out["messages"] += messages
     grouped_sections = group_by_eq(
         components,
