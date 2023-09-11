@@ -31,7 +31,7 @@ REQUIRED = [
     "lxml",
     "pandas",
     "parsedatetime",
-    "pydantic",
+    "pydantic<2",
 ]
 
 # What packages are optional?
