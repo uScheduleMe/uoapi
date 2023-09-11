@@ -10,7 +10,6 @@
         "label": "A",
         "components": [
           {
-
             "instructor": "David Handelman",
             "day": "MO",
             "start_time": "14:30",
@@ -22,10 +21,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           },
           {
-
             "instructor": "David Handelman",
             "day": "WE",
             "start_time": "16:00",
@@ -37,7 +36,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           }
         ]
       }
@@ -55,7 +55,6 @@
         "label": "A",
         "components": [
           {
-
             "instructor": "Paul Eugène J. Parent",
             "day": "MO",
             "start_time": "10:00",
@@ -67,10 +66,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           },
           {
-
             "instructor": "Paul Eugène J. Parent",
             "day": "WE",
             "start_time": "13:00",
@@ -82,7 +81,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           }
         ]
       }
@@ -100,7 +100,6 @@
         "label": "A",
         "components": [
           {
-
             "instructor": "Pieter Hofstra",
             "day": "MO",
             "start_time": "16:00",
@@ -112,10 +111,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           },
           {
-
             "instructor": "Pieter Hofstra",
             "day": "WE",
             "start_time": "14:30",
@@ -127,7 +126,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           }
         ]
       }
@@ -145,7 +145,6 @@
         "label": "A",
         "components": [
           {
-
             "instructor": "Damien Roy",
             "day": "TU",
             "start_time": "10:00",
@@ -157,10 +156,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           },
           {
-
             "instructor": "Damien Roy",
             "day": "TH",
             "start_time": "08:30",
@@ -172,7 +171,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           }
         ]
       }
@@ -190,7 +190,6 @@
         "label": "A",
         "components": [
           {
-
             "instructor": "Rafal Kulik",
             "day": "MO",
             "start_time": "19:00",
@@ -202,7 +201,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           }
         ]
       }
@@ -220,7 +220,6 @@
         "label": "A",
         "components": [
           {
-
             "instructor": "Clémonell Lord Baronat Bilayi-Biakana",
             "day": "TU",
             "start_time": "16:00",
@@ -232,10 +231,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           },
           {
-
             "instructor": "Clémonell Lord Baronat Bilayi-Biakana",
             "day": "TH",
             "start_time": "14:30",
@@ -247,7 +246,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           }
         ]
       }
@@ -265,7 +265,6 @@
         "label": "A",
         "components": [
           {
-
             "instructor": "Mahmoud Zarepour",
             "day": "TU",
             "start_time": "11:30",
@@ -277,10 +276,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           },
           {
-
             "instructor": "Mahmoud Zarepour",
             "day": "FR",
             "start_time": "13:00",
@@ -292,7 +291,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           }
         ]
       }
@@ -310,7 +310,6 @@
         "label": "C",
         "components": [
           {
-
             "instructor": "Tanya Schmah",
             "day": "MO",
             "start_time": "14:30",
@@ -322,10 +321,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           },
           {
-
             "instructor": "Tanya Schmah",
             "day": "WE",
             "start_time": "16:00",
@@ -337,7 +336,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           }
         ]
       }
@@ -355,7 +355,6 @@
         "label": "A",
         "components": [
           {
-
             "instructor": "Gilles Lamothe",
             "day": "MO",
             "start_time": "16:00",
@@ -367,10 +366,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           },
           {
-
             "instructor": "Gilles Lamothe",
             "day": "WE",
             "start_time": "14:30",
@@ -382,7 +381,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": ""
+            "description": "",
+            "room": ""
           }
         ]
       }
@@ -400,7 +400,6 @@
         "label": "B",
         "components": [
           {
-
             "instructor": "Chen Xu",
             "day": "MO",
             "start_time": "10:00",
@@ -412,10 +411,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": "Topic: High-dimensional Data Analysis"
+            "description": "Topic: High-dimensional Data Analysis",
+            "room": ""
           },
           {
-
             "instructor": "Chen Xu",
             "day": "WE",
             "start_time": "08:30",
@@ -427,7 +426,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": "Topic: High-dimensional Data Analysis"
+            "description": "Topic: High-dimensional Data Analysis",
+            "room": ""
           }
         ]
       },
@@ -437,7 +437,6 @@
         "label": "F",
         "components": [
           {
-
             "instructor": "Rafal Kulik",
             "day": "MO",
             "start_time": "11:30",
@@ -449,10 +448,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": "Topic: Mathematical Foundations of Risk Management"
+            "description": "Topic: Mathematical Foundations of Risk Management",
+            "room": ""
           },
           {
-
             "instructor": "Rafal Kulik",
             "day": "WE",
             "start_time": "10:00",
@@ -464,7 +463,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": "Topic: Mathematical Foundations of Risk Management"
+            "description": "Topic: Mathematical Foundations of Risk Management",
+            "room": ""
           }
         ]
       }
@@ -482,7 +482,6 @@
         "label": "B",
         "components": [
           {
-
             "instructor": "David Sankoff",
             "day": "FR",
             "start_time": "10:00",
@@ -494,7 +493,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": "Topic: Mathematical Genomics"
+            "description": "Topic: Mathematical Genomics",
+            "room": ""
           }
         ]
       }
@@ -512,7 +512,6 @@
         "label": "D",
         "components": [
           {
-
             "instructor": "David Sankoff",
             "day": "TH",
             "start_time": "10:00",
@@ -524,7 +523,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": "Topic: Algor.de l'évolution génomique"
+            "description": "Topic: Algor.de l'évolution génomique",
+            "room": ""
           }
         ]
       }
@@ -542,7 +542,6 @@
         "label": "A",
         "components": [
           {
-
             "instructor": "Anne Broadbent",
             "day": "MO",
             "start_time": "13:00",
@@ -554,10 +553,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": "Topic: Quantum Computing"
+            "description": "Topic: Quantum Computing",
+            "room": ""
           },
           {
-
             "instructor": "Anne Broadbent",
             "day": "WE",
             "start_time": "11:30",
@@ -569,7 +568,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": "Topic: Quantum Computing"
+            "description": "Topic: Quantum Computing",
+            "room": ""
           }
         ]
       }
@@ -587,7 +587,6 @@
         "label": "B",
         "components": [
           {
-
             "instructor": "Victor Leblanc",
             "day": "MO",
             "start_time": "08:30",
@@ -599,10 +598,10 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": "Topic: Bifurcation Theory"
+            "description": "Topic: Bifurcation Theory",
+            "room": ""
           },
           {
-
             "instructor": "Victor Leblanc",
             "day": "WE",
             "start_time": "13:00",
@@ -614,7 +613,8 @@
             "type": "LEC",
             "session_type": "FULLSESS",
             "status": "OPEN",
-            "description": "Topic: Bifurcation Theory"
+            "description": "Topic: Bifurcation Theory",
+            "room": ""
           }
         ]
       }
