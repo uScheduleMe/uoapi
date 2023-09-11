@@ -592,8 +592,7 @@ def extract_section(section, descr, log=False, err_msg_prefix=""):
     n = max(map(len, (instrs, topic, dttms)))
     #
     return [{
-        # "room": normalize_whitespace(None[i])
-        #     if i < len(None) else "",
+        "room": "",
         "instructor": normalize_whitespace(instrs[i])
             if i < len(instrs) else "",
         "day": dttms[i][0].strip().upper()
