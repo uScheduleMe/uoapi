@@ -1,1 +1,624 @@
-[{"subject_code":"MAT","course_code":"4143","course_name":"Groups and Galois Theory","sections":[{"year":2020,"term":"winter","label":"A","components":[{"room":"800 King Edward (STE) J0106","instructor":"David Handelman","day":"MO","start_time":"14:30","end_time":"15:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""},{"room":"800 King Edward (STE) J0106","instructor":"David Handelman","day":"WE","start_time":"16:00","end_time":"17:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""}]}],"messages":[]},{"subject_code":"MAT","course_code":"4157","course_name":"Algebraic Topology I","sections":[{"year":2020,"term":"winter","label":"A","components":[{"room":"161 Louis Pasteur (CBY) B012","instructor":"Paul Eugène J. Parent","day":"MO","start_time":"10:00","end_time":"11:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""},{"room":"161 Louis Pasteur (CBY) B012","instructor":"Paul Eugène J. Parent","day":"WE","start_time":"13:00","end_time":"14:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""}]}],"messages":[]},{"subject_code":"MAT","course_code":"4162","course_name":"Topics in Mathematical Logic","sections":[{"year":2020,"term":"winter","label":"A","components":[{"room":"120 University (FSS) 1005","instructor":"Pieter Hofstra","day":"MO","start_time":"16:00","end_time":"17:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""},{"room":"120 University (FSS) 1005","instructor":"Pieter Hofstra","day":"WE","start_time":"14:30","end_time":"15:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""}]}],"messages":[]},{"subject_code":"MAT","course_code":"4167","course_name":"Topics in Number Theory","sections":[{"year":2020,"term":"winter","label":"A","components":[{"room":"136 Jean-Jacques L. (VNR) 3075","instructor":"Damien Roy","day":"TU","start_time":"10:00","end_time":"11:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""},{"room":"136 Jean-Jacques L. (VNR) 3075","instructor":"Damien Roy","day":"TH","start_time":"08:30","end_time":"09:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""}]}],"messages":[]},{"subject_code":"MAT","course_code":"4171","course_name":"Probability Theory II","sections":[{"year":2020,"term":"winter","label":"A","components":[{"room":"800 King Edward (STE) F0126","instructor":"Rafal Kulik","day":"MO","start_time":"19:00","end_time":"21:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""}]}],"messages":[]},{"subject_code":"MAT","course_code":"4371","course_name":"Applied Probability","sections":[{"year":2020,"term":"winter","label":"A","components":[{"room":"550 Cumberland (TBT) 070","instructor":"Clémonell Lord Baronat Bilayi-Biakana","day":"TU","start_time":"16:00","end_time":"17:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""},{"room":"550 Cumberland (TBT) 070","instructor":"Clémonell Lord Baronat Bilayi-Biakana","day":"TH","start_time":"14:30","end_time":"15:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""}]}],"messages":[]},{"subject_code":"MAT","course_code":"4372","course_name":"Financial Mathematics","sections":[{"year":2020,"term":"winter","label":"A","components":[{"room":"60 University (SMD) 222","instructor":"Mahmoud Zarepour","day":"TU","start_time":"11:30","end_time":"12:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""},{"room":"60 University (SMD) 222","instructor":"Mahmoud Zarepour","day":"FR","start_time":"13:00","end_time":"14:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""}]}],"messages":[]},{"subject_code":"MAT","course_code":"4373","course_name":"Statistical Machine Learning","sections":[{"year":2020,"term":"winter","label":"C","components":[{"room":"120 University (FSS) 1030","instructor":"Tanya Schmah","day":"MO","start_time":"14:30","end_time":"15:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"C00-LEC","section_id":"C","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""},{"room":"120 University (FSS) 1030","instructor":"Tanya Schmah","day":"WE","start_time":"16:00","end_time":"17:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"C00-LEC","section_id":"C","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""}]}],"messages":[]},{"subject_code":"MAT","course_code":"4374","course_name":"Modern Computational Statistics","sections":[{"year":2020,"term":"winter","label":"A","components":[{"room":"57 Louis Pasteur (FTX) 232","instructor":"Gilles Lamothe","day":"MO","start_time":"16:00","end_time":"17:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""},{"room":"145 Jean-Jacq. Luss. (LMX) 221","instructor":"Gilles Lamothe","day":"WE","start_time":"14:30","end_time":"15:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":""}]}],"messages":[]},{"subject_code":"MAT","course_code":"4376","course_name":"Topics in Statistics","sections":[{"year":2020,"term":"winter","label":"B","components":[{"room":"120 University (FSS) 4014","instructor":"Chen Xu","day":"MO","start_time":"10:00","end_time":"11:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"B00-LEC","section_id":"B","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":"Topic: High-dimensional Data Analysis"},{"room":"800 King Edward (STE) J0106","instructor":"Chen Xu","day":"WE","start_time":"08:30","end_time":"09:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"B00-LEC","section_id":"B","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":"Topic: High-dimensional Data Analysis"}]},{"year":2020,"term":"winter","label":"F","components":[{"room":"140 Louis-Pasteur (MRN) 021","instructor":"Rafal Kulik","day":"MO","start_time":"11:30","end_time":"12:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"F00-LEC","section_id":"F","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":"Topic: Mathematical Foundations of Risk Management"},{"room":"140 Louis-Pasteur (MRN) 021","instructor":"Rafal Kulik","day":"WE","start_time":"10:00","end_time":"11:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"F00-LEC","section_id":"F","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":"Topic: Mathematical Foundations of Risk Management"}]}],"messages":[]},{"subject_code":"MAT","course_code":"4377","course_name":"Topics in Applied Probability","sections":[{"year":2020,"term":"winter","label":"B","components":[{"room":"801 King Edward (MNO) C211","instructor":"David Sankoff","day":"FR","start_time":"10:00","end_time":"12:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"B00-LEC","section_id":"B","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":"Topic: Mathematical Genomics"}]}],"messages":[]},{"subject_code":"MAT","course_code":"4776","course_name":"Chapitres choisis de statistique","sections":[{"year":2020,"term":"winter","label":"D","components":[{"room":"Department","instructor":"David Sankoff","day":"TH","start_time":"10:00","end_time":"12:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"D00-LEC","section_id":"D","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":"Topic: Algor.de l'évolution génomique"}]}],"messages":[]},{"subject_code":"MAT","course_code":"4995","course_name":"Special Topics in Mathematics","sections":[{"year":2020,"term":"winter","label":"A","components":[{"room":"800 King Edward (STE) F0126","instructor":"Anne Broadbent","day":"MO","start_time":"13:00","end_time":"14:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":"Topic: Quantum Computing"},{"room":"800 King Edward (STE) F0126","instructor":"Anne Broadbent","day":"WE","start_time":"11:30","end_time":"12:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"A00-LEC","section_id":"A","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":"Topic: Quantum Computing"}]}],"messages":[]},{"subject_code":"MAT","course_code":"4996","course_name":"Special Topics in Applied Mathematics","sections":[{"year":2020,"term":"winter","label":"B","components":[{"room":"800 King Edward (STE) J0106","instructor":"Victor Leblanc","day":"MO","start_time":"08:30","end_time":"09:50","start_date":"2020-01-06","end_date":"2020-04-04","label":"B00-LEC","section_id":"B","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":"Topic: Bifurcation Theory"},{"room":"800 King Edward (STE) J0106","instructor":"Victor Leblanc","day":"WE","start_time":"13:00","end_time":"14:20","start_date":"2020-01-06","end_date":"2020-04-04","label":"B00-LEC","section_id":"B","type":"LEC","session_type":"FULLSESS","status":"OPEN","description":"Topic: Bifurcation Theory"}]}],"messages":[]}]
+[
+  {
+    "subject_code": "MAT",
+    "course_code": "4143",
+    "course_name": "Groups and Galois Theory",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "A",
+        "components": [
+          {
+
+            "instructor": "David Handelman",
+            "day": "MO",
+            "start_time": "14:30",
+            "end_time": "15:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          },
+          {
+
+            "instructor": "David Handelman",
+            "day": "WE",
+            "start_time": "16:00",
+            "end_time": "17:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4157",
+    "course_name": "Algebraic Topology I",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "A",
+        "components": [
+          {
+
+            "instructor": "Paul Eugène J. Parent",
+            "day": "MO",
+            "start_time": "10:00",
+            "end_time": "11:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          },
+          {
+
+            "instructor": "Paul Eugène J. Parent",
+            "day": "WE",
+            "start_time": "13:00",
+            "end_time": "14:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4162",
+    "course_name": "Topics in Mathematical Logic",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "A",
+        "components": [
+          {
+
+            "instructor": "Pieter Hofstra",
+            "day": "MO",
+            "start_time": "16:00",
+            "end_time": "17:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          },
+          {
+
+            "instructor": "Pieter Hofstra",
+            "day": "WE",
+            "start_time": "14:30",
+            "end_time": "15:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4167",
+    "course_name": "Topics in Number Theory",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "A",
+        "components": [
+          {
+
+            "instructor": "Damien Roy",
+            "day": "TU",
+            "start_time": "10:00",
+            "end_time": "11:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          },
+          {
+
+            "instructor": "Damien Roy",
+            "day": "TH",
+            "start_time": "08:30",
+            "end_time": "09:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4171",
+    "course_name": "Probability Theory II",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "A",
+        "components": [
+          {
+
+            "instructor": "Rafal Kulik",
+            "day": "MO",
+            "start_time": "19:00",
+            "end_time": "21:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4371",
+    "course_name": "Applied Probability",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "A",
+        "components": [
+          {
+
+            "instructor": "Clémonell Lord Baronat Bilayi-Biakana",
+            "day": "TU",
+            "start_time": "16:00",
+            "end_time": "17:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          },
+          {
+
+            "instructor": "Clémonell Lord Baronat Bilayi-Biakana",
+            "day": "TH",
+            "start_time": "14:30",
+            "end_time": "15:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4372",
+    "course_name": "Financial Mathematics",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "A",
+        "components": [
+          {
+
+            "instructor": "Mahmoud Zarepour",
+            "day": "TU",
+            "start_time": "11:30",
+            "end_time": "12:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          },
+          {
+
+            "instructor": "Mahmoud Zarepour",
+            "day": "FR",
+            "start_time": "13:00",
+            "end_time": "14:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4373",
+    "course_name": "Statistical Machine Learning",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "C",
+        "components": [
+          {
+
+            "instructor": "Tanya Schmah",
+            "day": "MO",
+            "start_time": "14:30",
+            "end_time": "15:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "C00-LEC",
+            "section_id": "C",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          },
+          {
+
+            "instructor": "Tanya Schmah",
+            "day": "WE",
+            "start_time": "16:00",
+            "end_time": "17:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "C00-LEC",
+            "section_id": "C",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4374",
+    "course_name": "Modern Computational Statistics",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "A",
+        "components": [
+          {
+
+            "instructor": "Gilles Lamothe",
+            "day": "MO",
+            "start_time": "16:00",
+            "end_time": "17:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          },
+          {
+
+            "instructor": "Gilles Lamothe",
+            "day": "WE",
+            "start_time": "14:30",
+            "end_time": "15:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": ""
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4376",
+    "course_name": "Topics in Statistics",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "B",
+        "components": [
+          {
+
+            "instructor": "Chen Xu",
+            "day": "MO",
+            "start_time": "10:00",
+            "end_time": "11:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "B00-LEC",
+            "section_id": "B",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": "Topic: High-dimensional Data Analysis"
+          },
+          {
+
+            "instructor": "Chen Xu",
+            "day": "WE",
+            "start_time": "08:30",
+            "end_time": "09:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "B00-LEC",
+            "section_id": "B",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": "Topic: High-dimensional Data Analysis"
+          }
+        ]
+      },
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "F",
+        "components": [
+          {
+
+            "instructor": "Rafal Kulik",
+            "day": "MO",
+            "start_time": "11:30",
+            "end_time": "12:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "F00-LEC",
+            "section_id": "F",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": "Topic: Mathematical Foundations of Risk Management"
+          },
+          {
+
+            "instructor": "Rafal Kulik",
+            "day": "WE",
+            "start_time": "10:00",
+            "end_time": "11:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "F00-LEC",
+            "section_id": "F",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": "Topic: Mathematical Foundations of Risk Management"
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4377",
+    "course_name": "Topics in Applied Probability",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "B",
+        "components": [
+          {
+
+            "instructor": "David Sankoff",
+            "day": "FR",
+            "start_time": "10:00",
+            "end_time": "12:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "B00-LEC",
+            "section_id": "B",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": "Topic: Mathematical Genomics"
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4776",
+    "course_name": "Chapitres choisis de statistique",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "D",
+        "components": [
+          {
+
+            "instructor": "David Sankoff",
+            "day": "TH",
+            "start_time": "10:00",
+            "end_time": "12:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "D00-LEC",
+            "section_id": "D",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": "Topic: Algor.de l'évolution génomique"
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4995",
+    "course_name": "Special Topics in Mathematics",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "A",
+        "components": [
+          {
+
+            "instructor": "Anne Broadbent",
+            "day": "MO",
+            "start_time": "13:00",
+            "end_time": "14:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": "Topic: Quantum Computing"
+          },
+          {
+
+            "instructor": "Anne Broadbent",
+            "day": "WE",
+            "start_time": "11:30",
+            "end_time": "12:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "A00-LEC",
+            "section_id": "A",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": "Topic: Quantum Computing"
+          }
+        ]
+      }
+    ],
+    "messages": []
+  },
+  {
+    "subject_code": "MAT",
+    "course_code": "4996",
+    "course_name": "Special Topics in Applied Mathematics",
+    "sections": [
+      {
+        "year": 2020,
+        "term": "winter",
+        "label": "B",
+        "components": [
+          {
+
+            "instructor": "Victor Leblanc",
+            "day": "MO",
+            "start_time": "08:30",
+            "end_time": "09:50",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "B00-LEC",
+            "section_id": "B",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": "Topic: Bifurcation Theory"
+          },
+          {
+
+            "instructor": "Victor Leblanc",
+            "day": "WE",
+            "start_time": "13:00",
+            "end_time": "14:20",
+            "start_date": "2020-01-06",
+            "end_date": "2020-04-04",
+            "label": "B00-LEC",
+            "section_id": "B",
+            "type": "LEC",
+            "session_type": "FULLSESS",
+            "status": "OPEN",
+            "description": "Topic: Bifurcation Theory"
+          }
+        ]
+      }
+    ],
+    "messages": []
+  }
+]
