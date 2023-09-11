@@ -539,10 +539,10 @@ def extract_section(section, descr, log=False, err_msg_prefix=""):
         "description": normalize_whitespace(descr),
     }
     # Extract individual components
-    rooms = [x.strip() for x in section(lambda x:  
-            search_tag(x, "span", "id", "MTG_ROOM"))[0].contents 
-        if isinstance(x, str)
-    ]
+    # rooms = [x.strip() for x in section(lambda x:  
+    #         search_tag(x, "span", "id", "MTG_ROOM"))[0].contents 
+    #     if isinstance(x, str)
+    # ]
     instrs = [x.strip() for x in section(lambda x:  
             search_tag(x, "span", "id", "MTG_INSTR"))[0].contents 
         if isinstance(x, str)
@@ -568,8 +568,8 @@ def extract_section(section, descr, log=False, err_msg_prefix=""):
     ]
     # Handle the case when the number of details differ between columns
     #@TODO Move to own function
-    n = max(map(len, (rooms, instrs, topic, dttms)))
-    if min(map(len, (rooms, instrs, topic, dttms))) < n:
+    n = max(map(len, (instrs, topic, dttms)))
+    if min(map(len, (instrs, topic, dttms))) < n:
         em("debug", "inconsistent details length in %s" % id_)
     # Handle multiple instructors
     if (len(instrs) / len(dttms)) % 1 != 0:
@@ -589,11 +589,10 @@ def extract_section(section, descr, log=False, err_msg_prefix=""):
             "debug",
             "distributing instructors accross days"
         )
-    n = max(map(len, (rooms, instrs, topic, dttms)))
+    n = max(map(len, (instrs, topic, dttms)))
     #
     return [{
-        "room": normalize_whitespace(rooms[i])
-            if i < len(rooms) else "",
+        "room": "",
         "instructor": normalize_whitespace(instrs[i])
             if i < len(instrs) else "",
         "day": dttms[i][0].strip().upper()
